@@ -1,74 +1,39 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { useToast } from "@/components/ui/use-toast";
-import { processMobilePayment } from "@/lib/payment";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { CustomerInfoForm } from "@/components/checkout/CustomerInfoForm";
 import { PaymentMethodSelector } from "@/components/checkout/PaymentMethodSelector";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
-import { Button } from "@/components/ui/button";
-import { processOrder } from "@/lib/orders";
+import { CheckoutProvider, useCheckout } from "@/contexts/CheckoutContext";
+import { useOrderProcessing } from "@/hooks/useOrderProcessing";
 
-interface OrderItem {
-  medicineId: string;
-  name: string;
-  quantity: number;
-  price: number;
-}
-
-interface UserData {
-  displayName: string;
-  phoneNumber: string;
-  address: string;
-  email: string;
-}
-
-export const Checkout = () => {
+const CheckoutContent = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
-  const { toast } = useToast();
-  const [items, setItems] = useState<OrderItem[]>([]);
-  const [total, setTotal] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [mobileMethod, setMobileMethod] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [userFormData, setUserFormData] = useState({
-    displayName: "",
-    phoneNumber: "",
-    address: "",
-    email: "",
-  });
-  const [bankDetails, setBankDetails] = useState({
-    bankName: "",
-    accountName: "",
-    accountNumber: "",
-    branchName: "",
-    transactionId: "",
-  });
-  const [mobilePaymentStatus, setMobilePaymentStatus] = useState<"idle" | "processing" | "completed">("idle");
+  const {
+    items,
+    total,
+    paymentMethod,
+    mobileMethod,
+    bankDetails,
+    customerInfo,
+    setItems,
+    setTotal,
+    updateItemQuantity,
+    setCustomerInfo,
+    setPaymentMethod,
+    setMobileMethod,
+    setBankDetails,
+  } = useCheckout();
+  
+  const { loading, processOrderSubmission } = useOrderProcessing(user?.uid || "");
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user) return;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data() as UserData;
-        setUserData(data);
-        setUserFormData({
-          displayName: data.displayName || "",
-          phoneNumber: data.phoneNumber || "",
-          address: data.address || "",
-          email: data.email || "",
-        });
-      }
-    };
-
     const fetchItems = async () => {
       if (!user) return;
+      
       try {
         if (location.state?.singleItem) {
           setItems([location.state.singleItem]);
@@ -88,125 +53,25 @@ export const Checkout = () => {
         }
       } catch (error) {
         console.error("Error fetching items:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load items",
-          variant: "destructive",
-        });
       }
     };
 
-    fetchUserData();
     fetchItems();
   }, [user, location.state]);
 
-  const handleQuantityChange = async (medicineId: string, newQuantity: number) => {
-    const updatedItems = items.map(item =>
-      item.medicineId === medicineId ? { ...item, quantity: newQuantity } : item
-    );
-    setItems(updatedItems);
-    setTotal(updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0));
-
-    if (!location.state?.singleItem && user) {
-      try {
-        const cartItemRef = doc(db, "cartItems", `${user.uid}_${medicineId}`);
-        await updateDoc(cartItemRef, { quantity: newQuantity });
-      } catch (error) {
-        console.error("Error updating quantity:", error);
-        toast({
-          title: "Error",
-          description: "Failed to update quantity",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
-  const generateInvoiceNumber = () => {
-    return `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  };
-
-  const handleSubmitOrder = async () => {
+  const handleSubmit = async () => {
     if (!user) return;
     
-    try {
-      setLoading(true);
-
-      if (paymentMethod === "mobile" && mobileMethod) {
-        setMobilePaymentStatus("processing");
-        try {
-          const paymentResult = await processMobilePayment({
-            phoneNumber: userFormData.phoneNumber,
-            amount: total,
-            method: mobileMethod as 'bkash' | 'nagad' | 'rocket',
-          });
-          setMobilePaymentStatus("completed");
-          bankDetails.transactionId = paymentResult.transactionId;
-        } catch (error) {
-          toast({
-            title: "Payment Failed",
-            description: "Mobile payment processing failed. Please try again.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-      
-      const invoiceNumber = generateInvoiceNumber();
-      const orderData = {
-        userId: user.uid,
-        items: items,
-        total: total,
-        paymentMethod: paymentMethod,
-        mobileMethod: mobileMethod,
-        status: "pending",
-        createdAt: new Date(),
-        invoiceNumber,
-        customerInfo: userFormData,
-        ...(paymentMethod === "bank" && { bankDetails }),
-      };
-
-      const orderRef = await addDoc(collection(db, "orders"), orderData);
-
-      // Process the order immediately to update stock
-      await processOrder(orderRef.id);
-
-      if (!location.state?.singleItem) {
-        const cartRef = collection(db, "cartItems");
-        const q = query(cartRef, where("userId", "==", user.uid));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.docs.forEach(async (document) => {
-          await deleteDoc(doc(db, "cartItems", document.id));
-        });
-      }
-
-      toast({
-        title: "Order placed successfully",
-        description: "You will be redirected to your orders",
-      });
-
-      navigate("/orders");
-    } catch (error) {
-      console.error("Error placing order:", error);
-      toast({
-        title: "Error",
-        description: "Failed to place order",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-      setMobilePaymentStatus("idle");
-    }
-  };
-
-  if (!user) {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Please login to checkout</h1>
-        <Button onClick={() => navigate("/login")}>Login</Button>
-      </div>
+    await processOrderSubmission(
+      items,
+      total,
+      paymentMethod,
+      mobileMethod,
+      bankDetails,
+      customerInfo,
+      !!location.state?.singleItem
     );
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -215,8 +80,8 @@ export const Checkout = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
           <CustomerInfoForm 
-            userFormData={userFormData}
-            onFormDataChange={(data) => setUserFormData(prev => ({ ...prev, ...data }))}
+            userFormData={customerInfo}
+            onFormDataChange={setCustomerInfo}
           />
 
           <PaymentMethodSelector
@@ -233,12 +98,20 @@ export const Checkout = () => {
             items={items}
             total={total}
             loading={loading}
-            onSubmit={handleSubmitOrder}
+            onSubmit={handleSubmit}
             disabled={!paymentMethod || (paymentMethod === "mobile" && !mobileMethod)}
-            onQuantityChange={handleQuantityChange}
+            onQuantityChange={updateItemQuantity}
           />
         </div>
       </div>
     </div>
+  );
+};
+
+export const Checkout = () => {
+  return (
+    <CheckoutProvider>
+      <CheckoutContent />
+    </CheckoutProvider>
   );
 };
