@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { AddMedicineForm } from "@/components/dashboard/AddMedicineForm";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { PopularProducts } from "@/components/dashboard/PopularProducts";
@@ -47,6 +47,34 @@ export const CompanyDashboard = () => {
         const productsSnapshot = await getDocs(productsQuery);
         const totalProducts = productsSnapshot.size;
         console.log("Total products found:", totalProducts);
+
+        // Get all medicine IDs for this company
+        const companyMedicineIds = productsSnapshot.docs.map(doc => doc.id);
+        console.log("Company medicine IDs:", companyMedicineIds);
+
+        // Fetch 3 most recent orders that contain any of the company's medicines
+        const ordersQuery = query(
+          collection(db, "orders"),
+          orderBy("createdAt", "desc"),
+          limit(10) // Fetch more than needed as we'll filter
+        );
+        
+        const ordersSnapshot = await getDocs(ordersQuery);
+        const recentOrdersData = ordersSnapshot.docs
+          .map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            createdAt: doc.data().createdAt.toDate()
+          }))
+          .filter(order => 
+            order.items.some(item => 
+              companyMedicineIds.includes(item.medicineId)
+            )
+          )
+          .slice(0, 3) as Order[];
+
+        console.log("Recent orders found:", recentOrdersData.length);
+        setRecentOrders(recentOrdersData);
 
         // Update dashboard data with the correct total products count
         setDashboardData(prev => ({
