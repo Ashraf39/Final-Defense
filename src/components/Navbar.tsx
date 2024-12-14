@@ -251,11 +251,13 @@ export const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48 animate-in slide-in-from-top-2 duration-200">
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="w-full cursor-pointer">
-                      Profile
-                    </Link>
-                  </DropdownMenuItem>
+                  {userRole !== "admin" && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/profile" className="w-full cursor-pointer">
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   {userRole === "company" && (
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard" className="w-full cursor-pointer">
