@@ -10,10 +10,12 @@ import { db } from "@/lib/firebase";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { PopularProducts } from "@/components/dashboard/PopularProducts";
 import { DashboardData, Medicine, Order } from "@/types/dashboard";
+import { useToast } from "@/components/ui/use-toast";
 
 export const CompanyDashboard = () => {
   const { user, userRole } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [isAddingMedicine, setIsAddingMedicine] = useState(false);
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     totalProducts: 0,
@@ -24,7 +26,6 @@ export const CompanyDashboard = () => {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [popularProducts, setPopularProducts] = useState<Medicine[]>([]);
 
-  // Protect the route - only allow company users
   useEffect(() => {
     if (!user || userRole !== "company") {
       navigate("/");
@@ -38,74 +39,45 @@ export const CompanyDashboard = () => {
       try {
         console.log("Fetching dashboard data for company:", user.uid);
         
-        // Fetch total products
+        // Fetch total products for the specific company
         const productsQuery = query(
           collection(db, "medicines"),
           where("companyId", "==", user.uid)
         );
         const productsSnapshot = await getDocs(productsQuery);
         const totalProducts = productsSnapshot.size;
+        console.log("Total products found:", totalProducts);
 
-        // Fetch orders from the last 30 days
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
-        const ordersQuery = query(
-          collection(db, "orders"),
-          where("companyId", "==", user.uid),
-          where("createdAt", ">=", thirtyDaysAgo)
-        );
-        const ordersSnapshot = await getDocs(ordersQuery);
-        
-        let monthlySales = 0;
-        const uniqueCustomers = new Set();
-        let pendingOrders = 0;
-        
-        ordersSnapshot.forEach((doc) => {
-          const orderData = doc.data();
-          monthlySales += orderData.total || 0;
-          uniqueCustomers.add(orderData.userId);
-          if (orderData.status === "pending") {
-            pendingOrders++;
-          }
-        });
+        // Update dashboard data with the correct total products count
+        setDashboardData(prev => ({
+          ...prev,
+          totalProducts
+        }));
 
-        setDashboardData({
-          totalProducts,
-          monthlySales,
-          activeCustomers: uniqueCustomers.size,
-          pendingOrders
-        });
-
-        // Fetch recent orders
-        const recentOrdersQuery = query(
-          collection(db, "orders"),
-          where("companyId", "==", user.uid),
-          where("status", "==", "pending")
-        );
-        const recentOrdersSnapshot = await getDocs(recentOrdersQuery);
-        const recentOrdersData = recentOrdersSnapshot.docs.map(doc => ({
+        // Store products data for popular products section
+        const productsData = productsSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        })) as Order[];
-        setRecentOrders(recentOrdersData);
-
-        // Fetch popular products
-        const popularProductsData = productsSnapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() })) as Medicine[];
-        const sortedProducts = popularProductsData
+        })) as Medicine[];
+        
+        // Sort by sales (if available) and take top 5
+        const sortedProducts = productsData
           .sort((a, b) => (b.sales || 0) - (a.sales || 0))
           .slice(0, 5);
         setPopularProducts(sortedProducts);
 
-        console.log("Dashboard data fetched successfully");
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch dashboard data",
+          variant: "destructive",
+        });
       }
     };
 
     fetchDashboardData();
-  }, [user]);
+  }, [user, toast]);
 
   return (
     <div className="container mx-auto px-4 py-8">
