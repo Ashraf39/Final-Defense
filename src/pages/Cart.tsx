@@ -174,7 +174,9 @@ export const Cart = () => {
           <div className="mt-6 p-4 border rounded-lg bg-white">
             <div className="flex justify-between items-center mb-4">
               <span className="font-medium">Total:</span>
-              <span className="text-xl font-bold">${calculateTotal().toFixed(2)}</span>
+              <span className="text-xl font-bold">
+                ${calculateTotal().toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-end space-x-4">
               <Button variant="outline" onClick={() => navigate("/")}>

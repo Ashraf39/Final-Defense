@@ -12,6 +12,7 @@ import { MedicineDetails } from "@/pages/MedicineDetails";
 import { CompanyMedicines } from "@/pages/CompanyMedicines";
 import { Cart } from "@/pages/Cart";
 import { Orders } from "@/pages/Orders";
+import { Checkout } from "@/pages/Checkout";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
               <Route path="/company/:id" element={<CompanyMedicines />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/checkout" element={<Checkout />} />
             </Routes>
           </main>
           <Footer />

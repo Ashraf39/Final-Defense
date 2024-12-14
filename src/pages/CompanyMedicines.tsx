@@ -100,7 +100,7 @@ export const CompanyMedicines = () => {
     });
   };
 
-  const handleBuy = (medicineId: string) => {
+  const handleBuy = (medicine: Medicine) => {
     if (!user) {
       toast({
         title: "Authentication required",
@@ -110,7 +110,17 @@ export const CompanyMedicines = () => {
       navigate("/login");
       return;
     }
-    navigate(`/medicine/${medicineId}`);
+    
+    navigate("/checkout", {
+      state: {
+        singleItem: {
+          medicineId: medicine.id,
+          name: medicine.name,
+          quantity: 1,
+          price: medicine.price
+        }
+      }
+    });
   };
 
   return (
@@ -149,7 +159,7 @@ export const CompanyMedicines = () => {
               >
                 <ShoppingCart className="h-4 w-4" />
               </Button>
-              <Button size="sm" onClick={() => handleBuy(medicine.id)}>
+              <Button size="sm" onClick={() => handleBuy(medicine)}>
                 <CreditCard className="h-4 w-4 mr-1" />
                 Buy
               </Button>
