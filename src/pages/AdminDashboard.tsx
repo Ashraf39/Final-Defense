@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { collection, query, getDocs } from "firebase/firestore";
@@ -12,11 +12,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Building2, Package } from "lucide-react";
+import { User, Package } from "lucide-react";
+import { UserManagement } from "@/components/admin/UserManagement";
 
 export const AdminDashboard = () => {
   const { user, userRole } = useAuth();
   const navigate = useNavigate();
+  const [showUserManagement, setShowUserManagement] = useState(false);
 
   useEffect(() => {
     if (!user || userRole !== "admin") {
@@ -53,7 +55,7 @@ export const AdminDashboard = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
         <p className="text-muted-foreground mt-1">
-          Manage users, companies, and monitor system activity
+          Manage users and monitor system activity
         </p>
       </div>
 
@@ -72,7 +74,7 @@ export const AdminDashboard = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Companies</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
+            <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.totalCompanies || 0}</div>
@@ -102,18 +104,10 @@ export const AdminDashboard = () => {
             <Button 
               className="w-full justify-start" 
               variant="outline"
-              onClick={() => navigate("/admin/users")}
+              onClick={() => setShowUserManagement(true)}
             >
               <User className="mr-2 h-4 w-4" />
               Manage Users
-            </Button>
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => navigate("/admin/companies")}
-            >
-              <Building2 className="mr-2 h-4 w-4" />
-              Manage Companies
             </Button>
           </CardContent>
         </Card>
@@ -135,6 +129,10 @@ export const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {showUserManagement && (
+        <UserManagement onClose={() => setShowUserManagement(false)} />
+      )}
     </div>
   );
 };
