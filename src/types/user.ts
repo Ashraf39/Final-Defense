@@ -1,7 +1,7 @@
 export interface UserData {
   uid: string;
   email: string;
-  role: "regular" | "company";
+  role: "regular" | "company" | "admin";
   displayName?: string;
   phoneNumber?: string;
   address?: string;

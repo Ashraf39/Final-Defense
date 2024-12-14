@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 interface AuthContextType {
   user: User | null;
-  userRole: "regular" | "company" | null;
+  userRole: "regular" | "company" | "admin" | null;
   loading: boolean;
   logout: () => Promise<void>;
 }
@@ -23,7 +23,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<"regular" | "company" | null>(null);
+  const [userRole, setUserRole] = useState<"regular" | "company" | "admin" | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
