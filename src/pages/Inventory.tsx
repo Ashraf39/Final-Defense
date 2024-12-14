@@ -7,6 +7,7 @@ import { Medicine } from "@/types/medicine";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { AddMedicineDialog } from "@/components/inventory/AddMedicineDialog";
 import {
   Table,
   TableBody,
@@ -22,6 +23,7 @@ export const Inventory = () => {
   const { toast } = useToast();
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAddDialog, setShowAddDialog] = useState(false);
 
   useEffect(() => {
     if (!user || userRole !== "company") {
@@ -54,6 +56,15 @@ export const Inventory = () => {
     fetchMedicines();
   }, [user, userRole, navigate, toast]);
 
+  const handleMedicineAdded = (newMedicine: Medicine) => {
+    setMedicines((prev) => [...prev, newMedicine]);
+    setShowAddDialog(false);
+    toast({
+      title: "Success",
+      description: "Medicine added successfully",
+    });
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -62,7 +73,7 @@ export const Inventory = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Inventory Management</h1>
-        <Button>
+        <Button onClick={() => setShowAddDialog(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Medicine
         </Button>
       </div>
@@ -102,6 +113,13 @@ export const Inventory = () => {
           </TableBody>
         </Table>
       </div>
+
+      <AddMedicineDialog
+        open={showAddDialog}
+        onOpenChange={setShowAddDialog}
+        onMedicineAdded={handleMedicineAdded}
+        userId={user?.uid || ""}
+      />
     </div>
   );
 };
