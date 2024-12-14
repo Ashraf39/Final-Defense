@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ShoppingCart, Package, User, LogOut } from "lucide-react";
+import { ShoppingCart, Package, User, LogOut, LayoutDashboard } from "lucide-react";
 
 export const Navbar = () => {
   const { user, userRole, logout } = useAuth();
@@ -21,7 +21,7 @@ export const Navbar = () => {
           </Link>
 
           <div className="flex items-center gap-4">
-            {user && (
+            {user && userRole === "regular" && (
               <>
                 <Link to="/cart">
                   <Button variant="ghost" size="icon">
@@ -34,6 +34,14 @@ export const Navbar = () => {
                   </Button>
                 </Link>
               </>
+            )}
+
+            {user && userRole === "company" && (
+              <Link to="/dashboard">
+                <Button variant="ghost" size="icon">
+                  <LayoutDashboard className="h-5 w-5" />
+                </Button>
+              </Link>
             )}
 
             {user ? (
@@ -49,6 +57,13 @@ export const Navbar = () => {
                       Profile
                     </Link>
                   </DropdownMenuItem>
+                  {userRole === "company" && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="w-full">
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={logout}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
