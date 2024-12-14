@@ -4,23 +4,25 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Heart, ShoppingCart } from "lucide-react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { UserData } from "@/types/user";
 
 export const Home = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
-  const [companies, setCompanies] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<UserData[]>([]);
 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const companiesCollection = collection(db, "companies");
-        const companiesSnapshot = await getDocs(companiesCollection);
+        const usersRef = collection(db, "users");
+        const companyQuery = query(usersRef, where("role", "==", "company"));
+        const companiesSnapshot = await getDocs(companyQuery);
         const companiesData = companiesSnapshot.docs.map(doc => ({
-          id: doc.id,
+          uid: doc.id,
           ...doc.data()
-        }));
+        } as UserData));
         setCompanies(companiesData);
       } catch (error) {
         console.error("Error fetching companies:", error);
@@ -69,17 +71,17 @@ export const Home = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {companies.map((company) => (
             <Link
-              key={company.id}
-              to={`/company/${company.id}`}
+              key={company.uid}
+              to={`/company/${company.uid}`}
               className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 border border-green-100 group"
             >
               <img
-                src={company.logo || "/placeholder.svg"}
-                alt={`${company.name} Logo`}
+                src={company.companyLogo || "/placeholder.svg"}
+                alt={`${company.companyName} Logo`}
                 className="w-16 h-16 mx-auto mb-3 object-contain"
               />
               <h3 className="text-lg font-medium text-center text-gray-800 group-hover:text-green-600">
-                {company.name}
+                {company.companyName || "Company Name"}
               </h3>
             </Link>
           ))}
