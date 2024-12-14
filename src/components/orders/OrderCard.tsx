@@ -1,7 +1,10 @@
 import { Order } from "@/types/order";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { OrderStatusManager } from "./OrderStatusManager";
+import { updateOrderStatus } from "@/lib/orders";
+import { useToast } from "@/hooks/use-toast";
 
 interface OrderCardProps {
   order: Order;
@@ -10,12 +13,30 @@ interface OrderCardProps {
 }
 
 export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardProps) => {
+  const { toast } = useToast();
+  
   // Filter items to only show medicines belonging to the company if viewing as company
   const displayItems = isCompany
     ? order.items.filter((item) => companyMedicineIds?.includes(item.medicineId))
     : order.items;
 
   if (isCompany && displayItems.length === 0) return null;
+
+  const handleCancelOrder = async () => {
+    try {
+      await updateOrderStatus(order.id, "cancelled");
+      toast({
+        title: "Order cancelled",
+        description: "Your order has been cancelled successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: "Failed to cancel order. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Card className="p-6">
@@ -26,11 +47,22 @@ export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardPro
             {format(order.createdAt, "PPpp")}
           </p>
         </div>
-        <OrderStatusManager
-          orderId={order.id}
-          currentStatus={order.status}
-          isCompany={isCompany}
-        />
+        <div className="flex items-center gap-4">
+          <OrderStatusManager
+            orderId={order.id}
+            currentStatus={order.status}
+            isCompany={isCompany}
+          />
+          {!isCompany && order.status !== "cancelled" && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleCancelOrder}
+            >
+              Cancel Order
+            </Button>
+          )}
+        </div>
       </div>
 
       {isCompany && (
