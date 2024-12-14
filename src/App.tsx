@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { Navbar } from "@/components/Navbar";
@@ -15,6 +15,51 @@ import { Cart } from "@/pages/Cart";
 import { Orders } from "@/pages/Orders";
 import { Checkout } from "@/pages/Checkout";
 import { Inventory } from "@/pages/Inventory";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Protected Route component
+const ProtectedAdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, userRole } = useAuth();
+  
+  if (!user || userRole !== "admin") {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
+const AppRoutes = () => {
+  const { user, userRole } = useAuth();
+
+  // Redirect admin users to admin dashboard when they visit the home page
+  if (user && userRole === "admin" && window.location.pathname === "/") {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/dashboard" element={<CompanyDashboard />} />
+      <Route 
+        path="/admin" 
+        element={
+          <ProtectedAdminRoute>
+            <AdminDashboard />
+          </ProtectedAdminRoute>
+        } 
+      />
+      <Route path="/medicine/:id" element={<MedicineDetails />} />
+      <Route path="/company/:id" element={<CompanyMedicines />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/orders" element={<Orders />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/inventory" element={<Inventory />} />
+    </Routes>
+  );
+};
 
 const App = () => {
   return (
@@ -23,20 +68,7 @@ const App = () => {
         <div className="min-h-screen flex flex-col">
           <Navbar />
           <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/dashboard" element={<CompanyDashboard />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/medicine/:id" element={<MedicineDetails />} />
-              <Route path="/company/:id" element={<CompanyMedicines />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/inventory" element={<Inventory />} />
-            </Routes>
+            <AppRoutes />
           </main>
           <Footer />
         </div>
