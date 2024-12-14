@@ -7,27 +7,22 @@ import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { AddMedicineForm } from "@/components/dashboard/AddMedicineForm";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
-interface DashboardData {
-  totalProducts: number;
-  monthlySales: number;
-  activeCustomers: number;
-  pendingOrders: number;
-}
+import { RecentOrders } from "@/components/dashboard/RecentOrders";
+import { PopularProducts } from "@/components/dashboard/PopularProducts";
+import { DashboardData, Medicine, Order } from "@/types/dashboard";
 
 export const CompanyDashboard = () => {
   const { user, userRole } = useAuth();
   const navigate = useNavigate();
-  const [isAddingMedicine = false, setIsAddingMedicine] = useState(false);
+  const [isAddingMedicine, setIsAddingMedicine] = useState(false);
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     totalProducts: 0,
     monthlySales: 0,
     activeCustomers: 0,
     pendingOrders: 0
   });
-  const [recentOrders, setRecentOrders] = useState<any[]>([]);
-  const [popularProducts, setPopularProducts] = useState<any[]>([]);
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [popularProducts, setPopularProducts] = useState<Medicine[]>([]);
 
   // Protect the route - only allow company users
   useEffect(() => {
@@ -92,15 +87,16 @@ export const CompanyDashboard = () => {
         const recentOrdersData = recentOrdersSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
-        }));
+        })) as Order[];
         setRecentOrders(recentOrdersData);
 
         // Fetch popular products
         const popularProductsData = productsSnapshot.docs
-          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .map(doc => ({ id: doc.id, ...doc.data() })) as Medicine[];
+        const sortedProducts = popularProductsData
           .sort((a, b) => (b.sales || 0) - (a.sales || 0))
           .slice(0, 5);
-        setPopularProducts(popularProductsData);
+        setPopularProducts(sortedProducts);
 
         console.log("Dashboard data fetched successfully");
       } catch (error) {
@@ -164,59 +160,8 @@ export const CompanyDashboard = () => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Orders</CardTitle>
-            <CardDescription>Latest customer orders</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {recentOrders.length > 0 ? (
-              <div className="space-y-4">
-                {recentOrders.map((order) => (
-                  <div key={order.id} className="flex justify-between items-center p-4 border rounded">
-                    <div>
-                      <p className="font-medium">Order #{order.id.slice(0, 8)}</p>
-                      <p className="text-sm text-muted-foreground">${order.total?.toFixed(2)}</p>
-                    </div>
-                    <Button variant="outline" onClick={() => navigate(`/orders/${order.id}`)}>
-                      View
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">No recent orders</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Popular Products</CardTitle>
-            <CardDescription>Most sold medicines</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {popularProducts.length > 0 ? (
-              <div className="space-y-4">
-                {popularProducts.map((product) => (
-                  <div key={product.id} className="flex justify-between items-center p-4 border rounded">
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {product.sales || 0} sales
-                      </p>
-                    </div>
-                    <Button variant="outline" onClick={() => navigate(`/medicine/${product.id}`)}>
-                      View
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground">No products data available</p>
-            )}
-          </CardContent>
-        </Card>
+        <RecentOrders orders={recentOrders} />
+        <PopularProducts products={popularProducts} />
       </div>
     </div>
   );
