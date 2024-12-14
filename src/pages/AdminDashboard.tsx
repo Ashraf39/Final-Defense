@@ -14,11 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { User, Package } from "lucide-react";
 import { UserManagement } from "@/components/admin/UserManagement";
+import { MedicinesList } from "@/components/admin/MedicinesList";
 
 export const AdminDashboard = () => {
   const { user, userRole } = useAuth();
   const navigate = useNavigate();
   const [showUserManagement, setShowUserManagement] = useState(false);
+  const [showMedicinesList, setShowMedicinesList] = useState(false);
 
   useEffect(() => {
     if (!user || userRole !== "admin") {
@@ -52,14 +54,16 @@ export const AdminDashboard = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage users and monitor system activity
-        </p>
-      </div>
+      {!showMedicinesList ? (
+        <>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+            <p className="text-muted-foreground mt-1">
+              Manage users and monitor system activity
+            </p>
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
@@ -92,43 +96,56 @@ export const AdminDashboard = () => {
             <CardDescription>Available medicines in catalog</CardDescription>
           </CardContent>
         </Card>
-      </div>
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>User Management</CardTitle>
-            <CardDescription>Manage system users and their roles</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => setShowUserManagement(true)}
-            >
-              <User className="mr-2 h-4 w-4" />
-              Manage Users
-            </Button>
-          </CardContent>
-        </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>User Management</CardTitle>
+                <CardDescription>Manage system users and their roles</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => setShowUserManagement(true)}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  Manage Users
+                </Button>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Medicine Management</CardTitle>
-            <CardDescription>Monitor and manage medicine catalog</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Button 
-              className="w-full justify-start" 
-              variant="outline"
-              onClick={() => navigate("/admin/medicines")}
-            >
-              <Package className="mr-2 h-4 w-4" />
-              View All Medicines
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Medicine Management</CardTitle>
+                <CardDescription>Monitor and manage medicine catalog</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={() => setShowMedicinesList(true)}
+                >
+                  <Package className="mr-2 h-4 w-4" />
+                  View All Medicines
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      ) : (
+        <div>
+          <Button
+            variant="outline"
+            className="mb-4"
+            onClick={() => setShowMedicinesList(false)}
+          >
+            Back to Dashboard
+          </Button>
+          <MedicinesList />
+        </div>
+      )}
 
       {showUserManagement && (
         <UserManagement onClose={() => setShowUserManagement(false)} />
