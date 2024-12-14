@@ -9,6 +9,7 @@ import { CustomerInfoForm } from "@/components/checkout/CustomerInfoForm";
 import { PaymentMethodSelector } from "@/components/checkout/PaymentMethodSelector";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { Button } from "@/components/ui/button";
+import { processOrder } from "@/lib/orders";
 
 interface OrderItem {
   medicineId: string;
@@ -165,7 +166,10 @@ export const Checkout = () => {
         ...(paymentMethod === "bank" && { bankDetails }),
       };
 
-      await addDoc(collection(db, "orders"), orderData);
+      const orderRef = await addDoc(collection(db, "orders"), orderData);
+
+      // Process the order immediately to update stock
+      await processOrder(orderRef.id);
 
       if (!location.state?.singleItem) {
         const cartRef = collection(db, "cartItems");
