@@ -71,38 +71,40 @@ export const CompanyMedicines = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Company Medicines</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="container mx-auto px-4 py-6">
+      <h1 className="text-2xl font-bold mb-6">Company Medicines</h1>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {medicines.map((medicine) => (
           <Card key={medicine.id} className="flex flex-col">
-            <CardContent className="p-4">
+            <CardContent className="p-3">
               <img
                 src={medicine.image}
                 alt={medicine.name}
-                className="w-full h-48 object-cover rounded-lg mb-4"
+                className="w-full h-32 object-cover rounded-lg mb-2"
               />
-              <h3 className="text-lg font-semibold mb-2">{medicine.name}</h3>
-              <p className="text-gray-600 mb-2">{medicine.description}</p>
-              <p className="text-primary font-bold">${medicine.price}</p>
+              <h3 className="text-base font-semibold mb-1">{medicine.name}</h3>
+              <p className="text-sm text-gray-600 mb-1 line-clamp-2">{medicine.description}</p>
+              <p className="text-primary font-bold text-sm">${medicine.price}</p>
             </CardContent>
-            <CardFooter className="flex justify-between items-center p-4 mt-auto">
+            <CardFooter className="flex justify-between items-center p-2 mt-auto">
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
+                className="h-8 w-8"
                 onClick={() => handleLike(medicine.id)}
               >
                 <Heart className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
+                className="h-8 w-8"
                 onClick={() => handleAddToCart(medicine.id)}
               >
                 <ShoppingCart className="h-4 w-4" />
               </Button>
-              <Button onClick={() => handleBuy(medicine.id)}>
-                <CreditCard className="h-4 w-4 mr-2" />
+              <Button size="sm" onClick={() => handleBuy(medicine.id)}>
+                <CreditCard className="h-4 w-4 mr-1" />
                 Buy
               </Button>
             </CardFooter>
