@@ -8,10 +8,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Home, ShoppingCart, Package, User, LogOut, LayoutDashboard } from "lucide-react";
+import { useEffect, useState } from "react";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export const Navbar = () => {
   const { user, userRole, logout } = useAuth();
   const navigate = useNavigate();
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      const cartQuery = query(
+        collection(db, "cartItems"),
+        where("userId", "==", user.uid)
+      );
+
+      const unsubscribe = onSnapshot(cartQuery, (snapshot) => {
+        const totalQuantity = snapshot.docs.reduce((total, doc) => {
+          return total + (doc.data().quantity || 0);
+        }, 0);
+        setCartCount(totalQuantity);
+      });
+
+      return () => unsubscribe();
+    } else {
+      setCartCount(0);
+    }
+  }, [user]);
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -74,9 +98,11 @@ export const Navbar = () => {
                     className="hover:scale-110 transition-transform duration-200 relative"
                   >
                     <ShoppingCart className="h-5 w-5 text-gray-600" />
-                    <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                      0
-                    </span>
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-scale-in">
+                        {cartCount}
+                      </span>
+                    )}
                   </Button>
                 </Link>
                 <Link to="/orders">
