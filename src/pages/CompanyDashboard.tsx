@@ -6,7 +6,6 @@ import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { AddMedicineForm } from "@/components/dashboard/AddMedicineForm";
 import { PopularProducts } from "@/components/dashboard/PopularProducts";
 import { RecentOrdersSection } from "@/components/dashboard/RecentOrdersSection";
-import { PendingOrdersSection } from "@/components/dashboard/PendingOrdersSection";
 import { useState } from "react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 
@@ -18,8 +17,6 @@ export const CompanyDashboard = () => {
   const {
     dashboardData,
     recentOrders,
-    pendingOrders,
-    totalPendingOrders,
     popularProducts
   } = useDashboardData(user?.uid || "");
 
@@ -82,13 +79,6 @@ export const CompanyDashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <RecentOrdersSection orders={recentOrders} />
-        <PendingOrdersSection 
-          orders={pendingOrders}
-          totalPendingOrders={totalPendingOrders}
-        />
-      </div>
-
-      <div className="mt-6">
         <PopularProducts products={popularProducts} />
       </div>
     </div>
