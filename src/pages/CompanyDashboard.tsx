@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { DashboardStats } from "@/components/dashboard/DashboardStats";
 import { AddMedicineForm } from "@/components/dashboard/AddMedicineForm";
-import { collection, query, where, getDocs, orderBy, limit } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy, limit, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { RecentOrders } from "@/components/dashboard/RecentOrders";
 import { PopularProducts } from "@/components/dashboard/PopularProducts";
@@ -52,11 +52,16 @@ export const CompanyDashboard = () => {
         const companyMedicineIds = productsSnapshot.docs.map(doc => doc.id);
         console.log("Company medicine IDs:", companyMedicineIds);
 
-        // Fetch 3 most recent orders that contain any of the company's medicines
+        // Calculate the timestamp for 7 days ago
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const sevenDaysAgoTimestamp = Timestamp.fromDate(sevenDaysAgo);
+
+        // Fetch orders from the last 7 days
         const ordersQuery = query(
           collection(db, "orders"),
-          orderBy("createdAt", "desc"),
-          limit(10) // Fetch more than needed as we'll filter
+          where("createdAt", ">=", sevenDaysAgoTimestamp),
+          orderBy("createdAt", "desc")
         );
         
         const ordersSnapshot = await getDocs(ordersQuery);
@@ -70,16 +75,24 @@ export const CompanyDashboard = () => {
             order.items.some(item => 
               companyMedicineIds.includes(item.medicineId)
             )
-          )
-          .slice(0, 3);
+          );
 
-        console.log("Recent orders found:", recentOrdersData.length);
-        setRecentOrders(recentOrdersData);
+        // Calculate active customers (unique users who ordered in last 7 days)
+        const activeCustomers = new Set(
+          recentOrdersData.map(order => order.userId)
+        ).size;
+        console.log("Active customers in last 7 days:", activeCustomers);
 
-        // Update dashboard data with the correct total products count
+        // Get only the 3 most recent orders for display
+        const latestOrders = recentOrdersData.slice(0, 3);
+        console.log("Recent orders found:", latestOrders.length);
+        setRecentOrders(latestOrders);
+
+        // Update dashboard data with the correct counts
         setDashboardData(prev => ({
           ...prev,
-          totalProducts
+          totalProducts,
+          activeCustomers
         }));
 
         // Store products data for popular products section
@@ -147,7 +160,7 @@ export const CompanyDashboard = () => {
           {
             title: "Active Customers",
             value: dashboardData.activeCustomers.toString(),
-            description: "Customers this month",
+            description: "Customers in last 7 days",
             icon: "Users"
           },
           {
