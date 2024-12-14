@@ -1,34 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingCart, CreditCard } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Medicine } from "@/types/medicine";
 
 export const CompanyMedicines = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
 
-  const [medicines] = useState([
-    {
-      id: 1,
-      name: "Medicine 1",
-      description: "Description for Medicine 1",
-      price: 99.99,
-      image: "/placeholder.svg",
-    },
-    {
-      id: 2,
-      name: "Medicine 2",
-      description: "Description for Medicine 2",
-      price: 149.99,
-      image: "/placeholder.svg",
-    },
-    // Add more medicines as needed
-  ]);
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const medicinesRef = collection(db, "medicines");
+        const medicinesQuery = query(medicinesRef, where("companyId", "==", id));
+        const medicinesSnapshot = await getDocs(medicinesQuery);
+        const medicinesData = medicinesSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Medicine[];
+        setMedicines(medicinesData);
+      } catch (error) {
+        console.error("Error fetching medicines:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load medicines",
+          variant: "destructive",
+        });
+      }
+    };
+
+    if (id) {
+      fetchMedicines();
+    }
+  }, [id, toast]);
 
   const requireAuth = (action: () => void) => {
     if (!user) {
@@ -43,7 +55,7 @@ export const CompanyMedicines = () => {
     action();
   };
 
-  const handleLike = (medicineId: number) => {
+  const handleLike = (medicineId: string) => {
     requireAuth(() => {
       toast({
         title: "Added to favorites",
@@ -52,7 +64,7 @@ export const CompanyMedicines = () => {
     });
   };
 
-  const handleAddToCart = (medicineId: number) => {
+  const handleAddToCart = (medicineId: string) => {
     requireAuth(() => {
       toast({
         title: "Added to cart",
@@ -61,7 +73,7 @@ export const CompanyMedicines = () => {
     });
   };
 
-  const handleBuy = (medicineId: number) => {
+  const handleBuy = (medicineId: string) => {
     requireAuth(() => {
       toast({
         title: "Proceeding to checkout",
@@ -78,13 +90,16 @@ export const CompanyMedicines = () => {
           <Card key={medicine.id} className="flex flex-col">
             <CardContent className="p-3">
               <img
-                src={medicine.image}
+                src={medicine.image || "/placeholder.svg"}
                 alt={medicine.name}
                 className="w-full h-32 object-cover rounded-lg mb-2"
               />
               <h3 className="text-base font-semibold mb-1">{medicine.name}</h3>
-              <p className="text-sm text-gray-600 mb-1 line-clamp-2">{medicine.description}</p>
+              <p className="text-sm text-gray-600 mb-1 line-clamp-2">
+                {medicine.description}
+              </p>
               <p className="text-primary font-bold text-sm">${medicine.price}</p>
+              <p className="text-sm text-gray-500">Stock: {medicine.stock}</p>
             </CardContent>
             <CardFooter className="flex justify-between items-center p-2 mt-auto">
               <Button
