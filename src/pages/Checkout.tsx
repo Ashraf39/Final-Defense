@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
@@ -8,6 +8,7 @@ import { PaymentMethodSelector } from "@/components/checkout/PaymentMethodSelect
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { CheckoutProvider, useCheckout } from "@/contexts/CheckoutContext";
 import { useOrderProcessing } from "@/hooks/useOrderProcessing";
+import { toast } from "@/hooks/use-toast";
 
 const CheckoutContent = () => {
   const { user } = useAuth();
@@ -80,8 +81,7 @@ const CheckoutContent = () => {
       mobileMethod,
       bankDetails,
       customerInfo,
-      !!location.state?.singleItem,
-      mobileDetails
+      !!location.state?.singleItem
     );
   };
 
