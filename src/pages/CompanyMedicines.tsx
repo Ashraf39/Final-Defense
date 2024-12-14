@@ -128,7 +128,11 @@ export const CompanyMedicines = () => {
       <h1 className="text-2xl font-bold mb-6">Company Medicines</h1>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {medicines.map((medicine) => (
-          <Card key={medicine.id} className="flex flex-col">
+          <Card 
+            key={medicine.id} 
+            className="flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => navigate(`/medicine/${medicine.id}`)}
+          >
             <CardContent className="p-3">
               <img
                 src={medicine.image || "/placeholder.svg"}
@@ -147,7 +151,10 @@ export const CompanyMedicines = () => {
                 variant="ghost"
                 size="sm"
                 className={`h-8 w-8 ${likedMedicines.has(medicine.id) ? "text-red-500" : ""}`}
-                onClick={() => handleLike(medicine.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleLike(medicine.id);
+                }}
               >
                 <Heart className={`h-4 w-4 ${likedMedicines.has(medicine.id) ? "fill-current" : ""}`} />
               </Button>
@@ -155,11 +162,20 @@ export const CompanyMedicines = () => {
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8"
-                onClick={() => handleAddToCart(medicine)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToCart(medicine);
+                }}
               >
                 <ShoppingCart className="h-4 w-4" />
               </Button>
-              <Button size="sm" onClick={() => handleBuy(medicine)}>
+              <Button 
+                size="sm" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBuy(medicine);
+                }}
+              >
                 <CreditCard className="h-4 w-4 mr-1" />
                 Buy
               </Button>
