@@ -2,7 +2,7 @@ import { useState } from "react";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { UserData } from "@/types/user";
 
 interface UserManagementProps {
   onClose: () => void;
@@ -34,7 +35,7 @@ export const UserManagement = ({ onClose }: UserManagementProps) => {
       const snapshot = await getDocs(usersQuery);
       return snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...(doc.data() as Omit<UserData, 'uid'>)
       }));
     },
   });
