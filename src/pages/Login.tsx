@@ -3,8 +3,9 @@ import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { signInWithEmailAndPassword, AuthError } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { doc, getDoc } from "firebase/firestore";
 
 export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,8 +21,18 @@ export const Login = () => {
     const password = formData.get("password") as string;
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/");
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Get user role from Firestore
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+      const userRole = userDoc.data()?.role;
+
+      // Redirect based on role
+      if (userRole === "company") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
+
       toast({
         title: "Logged in successfully",
         duration: 2000,
