@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { BankPaymentDetails } from "@/components/payment/BankPaymentDetails";
+import { processMobilePayment } from "@/lib/payment";
 
 interface OrderItem {
   medicineId: string;
@@ -42,6 +44,14 @@ export const Checkout = () => {
     address: "",
     email: "",
   });
+  const [bankDetails, setBankDetails] = useState({
+    bankName: "",
+    accountName: "",
+    accountNumber: "",
+    branchName: "",
+    transactionId: "",
+  });
+  const [mobilePaymentStatus, setMobilePaymentStatus] = useState<"idle" | "processing" | "completed">("idle");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -101,6 +111,28 @@ export const Checkout = () => {
     
     try {
       setLoading(true);
+
+      // Process mobile payment if selected
+      if (paymentMethod === "mobile" && mobileMethod) {
+        setMobilePaymentStatus("processing");
+        try {
+          const paymentResult = await processMobilePayment({
+            phoneNumber: userFormData.phoneNumber,
+            amount: total,
+            method: mobileMethod as 'bkash' | 'nagad' | 'rocket',
+          });
+          setMobilePaymentStatus("completed");
+          // Store the transaction ID
+          bankDetails.transactionId = paymentResult.transactionId;
+        } catch (error) {
+          toast({
+            title: "Payment Failed",
+            description: "Mobile payment processing failed. Please try again.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
       
       const invoiceNumber = generateInvoiceNumber();
       const orderData = {
@@ -113,6 +145,7 @@ export const Checkout = () => {
         createdAt: new Date(),
         invoiceNumber,
         customerInfo: userFormData,
+        ...(paymentMethod === "bank" && { bankDetails }),
       };
 
       await addDoc(collection(db, "orders"), orderData);
@@ -142,6 +175,7 @@ export const Checkout = () => {
       });
     } finally {
       setLoading(false);
+      setMobilePaymentStatus("idle");
     }
   };
 
@@ -219,6 +253,10 @@ export const Checkout = () => {
                 <Label htmlFor="mobile">Mobile Banking</Label>
               </div>
             </RadioGroup>
+
+            {paymentMethod === "bank" && (
+              <BankPaymentDetails onDetailsChange={setBankDetails} />
+            )}
 
             {paymentMethod === "mobile" && (
               <div className="mt-4">

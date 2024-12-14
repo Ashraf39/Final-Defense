@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/components/ui/use-toast";
 
 interface OrderItem {
   medicineId: string;
@@ -26,9 +27,16 @@ interface Order {
   invoiceNumber: string;
   customerInfo: {
     displayName: string;
-    email: string;
     phoneNumber: string;
     address: string;
+    email: string;
+  };
+  bankDetails?: {
+    bankName: string;
+    accountName: string;
+    accountNumber: string;
+    branchName: string;
+    transactionId: string;
   };
 }
 
@@ -36,6 +44,7 @@ export const Orders = () => {
   const { user, userRole } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -46,17 +55,14 @@ export const Orders = () => {
         let q;
 
         if (userRole === "company") {
-          // For companies, fetch orders containing their medicines
+          // For companies, fetch all orders and filter for their medicines
           const companyMedicinesSnapshot = await getDocs(
             query(collection(db, "medicines"), where("companyId", "==", user.uid))
           );
           const companyMedicineIds = companyMedicinesSnapshot.docs.map(doc => doc.id);
           
-          q = query(
-            ordersRef,
-            orderBy("createdAt", "desc")
-          );
-
+          q = query(ordersRef, orderBy("createdAt", "desc"));
+          
           const querySnapshot = await getDocs(q);
           const allOrders = querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
             id: doc.id,
@@ -64,7 +70,7 @@ export const Orders = () => {
             createdAt: doc.data().createdAt.toDate(),
           })) as Order[];
 
-          // Filter orders that contain company's medicines
+          // Filter orders containing company's medicines
           const companyOrders = allOrders.filter(order =>
             order.items.some(item => companyMedicineIds.includes(item.medicineId))
           );
@@ -89,6 +95,11 @@ export const Orders = () => {
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load orders",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
@@ -169,6 +180,13 @@ export const Orders = () => {
                       {order.paymentMethod}
                       {order.mobileMethod && ` (${order.mobileMethod})`}
                     </p>
+                    {order.bankDetails && (
+                      <div className="mt-2 text-sm text-gray-600">
+                        <p>Bank: {order.bankDetails.bankName}</p>
+                        <p>Account: {order.bankDetails.accountNumber}</p>
+                        <p>Transaction ID: {order.bankDetails.transactionId}</p>
+                      </div>
+                    )}
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">Total Amount</p>
