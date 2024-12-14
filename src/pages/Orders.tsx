@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, orderBy, getDocs, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
+import { collection, query, where, getDocs, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { OrderCard } from "@/components/orders/OrderCard";
@@ -32,25 +32,12 @@ export const Orders = () => {
         const ordersRef = collection(db, "orders");
         let q;
 
+        // Different query for company vs regular users
         if (userRole === "company") {
           q = query(ordersRef);
         } else {
-          try {
-            // First try with ordering
-            q = query(
-              ordersRef,
-              where("userId", "==", user.uid),
-              orderBy("createdAt", "desc")
-            );
-          } catch (error: any) {
-            if (error.code === 'failed-precondition') {
-              // If index doesn't exist, fall back to simple query
-              setIndexError(error.message);
-              q = query(ordersRef, where("userId", "==", user.uid));
-            } else {
-              throw error;
-            }
-          }
+          // Simple query without ordering for regular users
+          q = query(ordersRef, where("userId", "==", user.uid));
         }
 
         const querySnapshot = await getDocs(q);
@@ -60,7 +47,7 @@ export const Orders = () => {
           createdAt: doc.data().createdAt.toDate(),
         })) as Order[];
 
-        // Sort orders by date if needed (in case we couldn't use orderBy in query)
+        // Manual sorting by date
         fetchedOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         
         setOrders(fetchedOrders);
@@ -68,7 +55,7 @@ export const Orders = () => {
         console.error("Error fetching orders:", error);
         toast({
           title: "Error",
-          description: "Failed to load orders",
+          description: "Failed to load orders. Please try again.",
           variant: "destructive",
         });
       } finally {
