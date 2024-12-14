@@ -1,8 +1,43 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useToast } from "@/hooks/use-toast";
 
 export const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/");
+      toast({
+        title: "Logged in successfully",
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        title: "Invalid credentials",
+        description: "The email or password you entered is incorrect",
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-md mx-auto space-y-6">
@@ -13,7 +48,7 @@ export const Login = () => {
           </p>
         </div>
 
-        <form className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium">
               Email
@@ -21,8 +56,10 @@ export const Login = () => {
             <Input
               type="email"
               id="email"
+              name="email"
               placeholder="Enter your email"
               className="mt-1"
+              required
             />
           </div>
           <div>
@@ -32,12 +69,14 @@ export const Login = () => {
             <Input
               type="password"
               id="password"
+              name="password"
               placeholder="Enter your password"
               className="mt-1"
+              required
             />
           </div>
-          <Button type="submit" className="w-full">
-            Login
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
         </form>
 
