@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, AuthError } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 
@@ -27,12 +27,22 @@ export const Login = () => {
         duration: 2000,
       });
     } catch (error) {
-      toast({
-        title: "Invalid credentials",
-        description: "The email or password you entered is incorrect",
-        variant: "destructive",
-        duration: 3000,
-      });
+      const authError = error as AuthError;
+      if (authError.code === "auth/invalid-login-credentials") {
+        toast({
+          title: "Invalid credentials",
+          description: "The email or password you entered is incorrect",
+          variant: "destructive",
+          duration: 3000,
+        });
+      } else {
+        toast({
+          title: "Login failed",
+          description: "An error occurred while trying to log in. Please try again.",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
