@@ -4,14 +4,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Card } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
-import { BankPaymentDetails } from "@/components/payment/BankPaymentDetails";
 import { processMobilePayment } from "@/lib/payment";
+import { CustomerInfoForm } from "@/components/checkout/CustomerInfoForm";
+import { PaymentMethodSelector } from "@/components/checkout/PaymentMethodSelector";
+import { OrderSummary } from "@/components/checkout/OrderSummary";
 
 interface OrderItem {
   medicineId: string;
@@ -112,7 +109,6 @@ export const Checkout = () => {
     try {
       setLoading(true);
 
-      // Process mobile payment if selected
       if (paymentMethod === "mobile" && mobileMethod) {
         setMobilePaymentStatus("processing");
         try {
@@ -122,7 +118,6 @@ export const Checkout = () => {
             method: mobileMethod as 'bkash' | 'nagad' | 'rocket',
           });
           setMobilePaymentStatus("completed");
-          // Store the transaction ID
           bankDetails.transactionId = paymentResult.transactionId;
         } catch (error) {
           toast({
@@ -150,7 +145,6 @@ export const Checkout = () => {
 
       await addDoc(collection(db, "orders"), orderData);
 
-      // Clear cart if coming from cart page
       if (!location.state?.singleItem) {
         const cartRef = collection(db, "cartItems");
         const q = query(cartRef, where("userId", "==", user.uid));
@@ -194,128 +188,28 @@ export const Checkout = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="space-y-6">
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="displayName">Full Name</Label>
-                <Input
-                  id="displayName"
-                  value={userFormData.displayName}
-                  onChange={(e) => setUserFormData(prev => ({ ...prev, displayName: e.target.value }))}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={userFormData.email}
-                  onChange={(e) => setUserFormData(prev => ({ ...prev, email: e.target.value }))}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="phoneNumber">Phone Number</Label>
-                <Input
-                  id="phoneNumber"
-                  value={userFormData.phoneNumber}
-                  onChange={(e) => setUserFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="address">Delivery Address</Label>
-                <Input
-                  id="address"
-                  value={userFormData.address}
-                  onChange={(e) => setUserFormData(prev => ({ ...prev, address: e.target.value }))}
-                  required
-                />
-              </div>
-            </div>
-          </Card>
+          <CustomerInfoForm 
+            userFormData={userFormData}
+            onFormDataChange={(data) => setUserFormData(prev => ({ ...prev, ...data }))}
+          />
 
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-            <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="cash" id="cash" />
-                <Label htmlFor="cash">Cash on Delivery</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="bank" id="bank" />
-                <Label htmlFor="bank">Bank Transfer</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="mobile" id="mobile" />
-                <Label htmlFor="mobile">Mobile Banking</Label>
-              </div>
-            </RadioGroup>
-
-            {paymentMethod === "bank" && (
-              <BankPaymentDetails onDetailsChange={setBankDetails} />
-            )}
-
-            {paymentMethod === "mobile" && (
-              <div className="mt-4">
-                <h3 className="font-medium mb-3">Select Mobile Banking Method</h3>
-                <RadioGroup value={mobileMethod} onValueChange={setMobileMethod} className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="bkash" id="bkash" />
-                    <Label htmlFor="bkash">Bkash</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="nagad" id="nagad" />
-                    <Label htmlFor="nagad">Nagad</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="rocket" id="rocket" />
-                    <Label htmlFor="rocket">Rocket</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            )}
-          </Card>
+          <PaymentMethodSelector
+            paymentMethod={paymentMethod}
+            mobileMethod={mobileMethod}
+            onPaymentMethodChange={setPaymentMethod}
+            onMobileMethodChange={setMobileMethod}
+            onBankDetailsChange={setBankDetails}
+          />
         </div>
 
         <div>
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-            <div className="space-y-4">
-              {items.map((item, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                  </div>
-                  <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-                </div>
-              ))}
-              <div className="border-t pt-4">
-                <div className="flex justify-between items-center">
-                  <p className="font-semibold">Total:</p>
-                  <p className="font-semibold">${total.toFixed(2)}</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Button
-            className="w-full mt-6"
-            onClick={handleSubmitOrder}
-            disabled={!paymentMethod || (paymentMethod === "mobile" && !mobileMethod) || loading}
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              "Place Order"
-            )}
-          </Button>
+          <OrderSummary
+            items={items}
+            total={total}
+            loading={loading}
+            onSubmit={handleSubmitOrder}
+            disabled={!paymentMethod || (paymentMethod === "mobile" && !mobileMethod)}
+          />
         </div>
       </div>
     </div>
