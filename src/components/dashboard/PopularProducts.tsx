@@ -14,7 +14,7 @@ export const PopularProducts = ({ products }: PopularProductsProps) => {
     <Card>
       <CardHeader>
         <CardTitle>Popular Products</CardTitle>
-        <CardDescription>Most sold medicines</CardDescription>
+        <CardDescription>Top 3 most sold medicines</CardDescription>
       </CardHeader>
       <CardContent>
         {products.length > 0 ? (
@@ -24,7 +24,7 @@ export const PopularProducts = ({ products }: PopularProductsProps) => {
                 <div>
                   <p className="font-medium">{product.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {product.sales || 0} sales
+                    {product.sales || 0} units sold
                   </p>
                 </div>
                 <Button variant="outline" onClick={() => navigate(`/medicine/${product.id}`)}>
@@ -34,7 +34,7 @@ export const PopularProducts = ({ products }: PopularProductsProps) => {
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground">No products data available</p>
+          <p className="text-muted-foreground">No sales data available</p>
         )}
       </CardContent>
     </Card>

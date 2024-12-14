@@ -13,22 +13,25 @@ export const useDashboardData = (userId: string) => {
     pendingOrders: 0
   });
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
-  const [pendingOrders, setPendingOrders] = useState<Order[]>([]);
-  const [totalPendingOrders, setTotalPendingOrders] = useState(0);
   const [popularProducts, setPopularProducts] = useState<Medicine[]>([]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
+        // Fetch company's medicines
         const productsQuery = query(
           collection(db, "medicines"),
           where("companyId", "==", userId)
         );
         const productsSnapshot = await getDocs(productsQuery);
         const totalProducts = productsSnapshot.size;
-        
         const companyMedicineIds = productsSnapshot.docs.map(doc => doc.id);
+        const productsData = productsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        })) as Medicine[];
 
+        // Time calculations
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const thirtyDaysAgoTimestamp = Timestamp.fromDate(thirtyDaysAgo);
@@ -36,6 +39,7 @@ export const useDashboardData = (userId: string) => {
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
+        // Fetch orders
         const ordersQuery = query(
           collection(db, "orders"),
           where("createdAt", ">=", thirtyDaysAgoTimestamp),
@@ -55,6 +59,7 @@ export const useDashboardData = (userId: string) => {
             )
           );
 
+        // Calculate monthly sales
         const monthlySales = recentOrdersData.reduce((total, order) => {
           const companyItems = order.items.filter(item => 
             companyMedicineIds.includes(item.medicineId)
@@ -65,35 +70,43 @@ export const useDashboardData = (userId: string) => {
           return total + orderTotal;
         }, 0);
 
-        const allPendingOrders = recentOrdersData.filter(order => order.status === "pending");
-        const pendingOrdersData = allPendingOrders.slice(0, 3);
-        setPendingOrders(pendingOrdersData);
-        setTotalPendingOrders(allPendingOrders.length);
-
+        // Calculate active customers
         const recentCustomers = recentOrdersData
           .filter(order => order.createdAt >= sevenDaysAgo)
           .map(order => order.userId);
         const activeCustomers = new Set(recentCustomers).size;
 
-        const latestOrders = recentOrdersData.slice(0, 3);
-        setRecentOrders(latestOrders);
+        // Calculate pending orders
+        const allPendingOrders = recentOrdersData.filter(order => order.status === "pending");
 
+        // Calculate top sold medicines
+        const medicinesSalesMap = new Map<string, number>();
+        
+        recentOrdersData.forEach(order => {
+          order.items.forEach(item => {
+            if (companyMedicineIds.includes(item.medicineId)) {
+              const currentSales = medicinesSalesMap.get(item.medicineId) || 0;
+              medicinesSalesMap.set(item.medicineId, currentSales + item.quantity);
+            }
+          });
+        });
+
+        const topSoldMedicines = productsData
+          .map(medicine => ({
+            ...medicine,
+            sales: medicinesSalesMap.get(medicine.id) || 0
+          }))
+          .sort((a, b) => (b.sales || 0) - (a.sales || 0))
+          .slice(0, 3);
+
+        setRecentOrders(recentOrdersData.slice(0, 3));
         setDashboardData({
           totalProducts,
           monthlySales,
           activeCustomers,
           pendingOrders: allPendingOrders.length
         });
-
-        const productsData = productsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Medicine[];
-        
-        const sortedProducts = productsData
-          .sort((a, b) => (b.sales || 0) - (a.sales || 0))
-          .slice(0, 5);
-        setPopularProducts(sortedProducts);
+        setPopularProducts(topSoldMedicines);
 
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
@@ -113,8 +126,6 @@ export const useDashboardData = (userId: string) => {
   return {
     dashboardData,
     recentOrders,
-    pendingOrders,
-    totalPendingOrders,
     popularProducts
   };
 };
