@@ -7,6 +7,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Home, ShoppingCart, Package, User, LogOut, LayoutDashboard, Boxes } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -73,15 +79,24 @@ export const Navbar = () => {
           <div className="flex items-center gap-2">
             {!user && (
               <>
-                <Link to="/">
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="hover:scale-110 transition-transform duration-200"
-                  >
-                    <Home className="h-5 w-5 text-gray-600" />
-                  </Button>
-                </Link>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link to="/">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="hover:scale-110 transition-transform duration-200"
+                        >
+                          <Home className="h-5 w-5 text-gray-600" />
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Home</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <Link to="/login">
                   <Button 
                     className="bg-green-600 hover:bg-green-700 transition-colors duration-200 hover:scale-105"
@@ -94,70 +109,128 @@ export const Navbar = () => {
 
             {user && userRole === "regular" && (
               <>
-                <Link to="/">
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="hover:scale-110 transition-transform duration-200"
-                  >
-                    <Home className="h-5 w-5 text-gray-600" />
-                  </Button>
-                </Link>
-                <Link to="/cart">
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="hover:scale-110 transition-transform duration-200 relative"
-                  >
-                    <ShoppingCart className="h-5 w-5 text-gray-600" />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-scale-in">
-                        {cartCount}
-                      </span>
-                    )}
-                  </Button>
-                </Link>
-                <Link to="/orders">
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="hover:scale-110 transition-transform duration-200"
-                  >
-                    <Package className="h-5 w-5 text-gray-600" />
-                  </Button>
-                </Link>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link to="/">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="hover:scale-110 transition-transform duration-200"
+                        >
+                          <Home className="h-5 w-5 text-gray-600" />
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Home</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link to="/cart">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="hover:scale-110 transition-transform duration-200 relative"
+                        >
+                          <ShoppingCart className="h-5 w-5 text-gray-600" />
+                          {cartCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-scale-in">
+                              {cartCount}
+                            </span>
+                          )}
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Shopping Cart</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link to="/orders">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="hover:scale-110 transition-transform duration-200"
+                        >
+                          <Package className="h-5 w-5 text-gray-600" />
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Orders</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </>
             )}
 
             {user && userRole === "company" && (
               <>
-                <Link to="/dashboard">
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="hover:scale-110 transition-transform duration-200"
-                  >
-                    <LayoutDashboard className="h-5 w-5 text-gray-600" />
-                  </Button>
-                </Link>
-                <Link to="/inventory">
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="hover:scale-110 transition-transform duration-200"
-                  >
-                    <Boxes className="h-5 w-5 text-gray-600" />
-                  </Button>
-                </Link>
-                <Link to="/orders">
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="hover:scale-110 transition-transform duration-200"
-                  >
-                    <Package className="h-5 w-5 text-gray-600" />
-                  </Button>
-                </Link>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link to="/dashboard">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="hover:scale-110 transition-transform duration-200"
+                        >
+                          <LayoutDashboard className="h-5 w-5 text-gray-600" />
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Dashboard</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link to="/inventory">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="hover:scale-110 transition-transform duration-200"
+                        >
+                          <Boxes className="h-5 w-5 text-gray-600" />
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Inventory</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link to="/orders">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="hover:scale-110 transition-transform duration-200"
+                        >
+                          <Package className="h-5 w-5 text-gray-600" />
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Orders</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </>
             )}
 
