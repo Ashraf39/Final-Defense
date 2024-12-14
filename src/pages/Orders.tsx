@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, orderBy, getDocs } from "firebase/firestore";
+import { collection, query, where, orderBy, getDocs, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
@@ -58,7 +58,7 @@ export const Orders = () => {
           );
 
           const querySnapshot = await getDocs(q);
-          const allOrders = querySnapshot.docs.map(doc => ({
+          const allOrders = querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
             id: doc.id,
             ...doc.data(),
             createdAt: doc.data().createdAt.toDate(),
@@ -79,7 +79,7 @@ export const Orders = () => {
           );
 
           const querySnapshot = await getDocs(q);
-          const userOrders = querySnapshot.docs.map(doc => ({
+          const userOrders = querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
             id: doc.id,
             ...doc.data(),
             createdAt: doc.data().createdAt.toDate(),
@@ -133,7 +133,7 @@ export const Orders = () => {
                   </p>
                 </div>
                 <div className="mt-2 md:mt-0">
-                  <Badge variant={order.status === "pending" ? "secondary" : "success"}>
+                  <Badge variant={order.status === "pending" ? "secondary" : "default"}>
                     {order.status}
                   </Badge>
                 </div>
