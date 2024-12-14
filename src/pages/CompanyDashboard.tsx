@@ -65,13 +65,13 @@ export const CompanyDashboard = () => {
             id: doc.id,
             ...doc.data(),
             createdAt: doc.data().createdAt.toDate()
-          }))
+          } as Order))
           .filter(order => 
             order.items.some(item => 
               companyMedicineIds.includes(item.medicineId)
             )
           )
-          .slice(0, 3) as Order[];
+          .slice(0, 3);
 
         console.log("Recent orders found:", recentOrdersData.length);
         setRecentOrders(recentOrdersData);
