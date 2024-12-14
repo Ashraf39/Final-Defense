@@ -2,6 +2,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { BankPaymentDetails } from "@/components/payment/BankPaymentDetails";
+import { MobilePaymentDetails } from "@/components/payment/MobilePaymentDetails";
 
 interface BankDetails {
   bankName: string;
@@ -11,12 +12,18 @@ interface BankDetails {
   transactionId: string;
 }
 
+interface MobileDetails {
+  phoneNumber: string;
+  transactionId: string;
+}
+
 interface PaymentMethodSelectorProps {
   paymentMethod: string;
   mobileMethod: string;
   onPaymentMethodChange: (method: string) => void;
   onMobileMethodChange: (method: string) => void;
   onBankDetailsChange: (details: BankDetails) => void;
+  onMobileDetailsChange: (details: MobileDetails) => void;
 }
 
 export const PaymentMethodSelector = ({
@@ -25,6 +32,7 @@ export const PaymentMethodSelector = ({
   onPaymentMethodChange,
   onMobileMethodChange,
   onBankDetailsChange,
+  onMobileDetailsChange,
 }: PaymentMethodSelectorProps) => {
   return (
     <Card className="p-6">
@@ -65,6 +73,13 @@ export const PaymentMethodSelector = ({
               <Label htmlFor="rocket">Rocket</Label>
             </div>
           </RadioGroup>
+
+          {mobileMethod && (
+            <MobilePaymentDetails 
+              method={mobileMethod} 
+              onDetailsChange={onMobileDetailsChange} 
+            />
+          )}
         </div>
       )}
     </Card>

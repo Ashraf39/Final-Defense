@@ -29,6 +29,7 @@ const CheckoutContent = () => {
   } = useCheckout();
   
   const { loading, processOrderSubmission } = useOrderProcessing(user?.uid || "");
+  const [mobileDetails, setMobileDetails] = useState({ phoneNumber: "", transactionId: "" });
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -61,6 +62,16 @@ const CheckoutContent = () => {
 
   const handleSubmit = async () => {
     if (!user) return;
+
+    // Validate mobile payment details if mobile payment is selected
+    if (paymentMethod === "mobile" && (!mobileDetails.phoneNumber || !mobileDetails.transactionId)) {
+      toast({
+        title: "Error",
+        description: "Please fill in all mobile banking details",
+        variant: "destructive",
+      });
+      return;
+    }
     
     await processOrderSubmission(
       items,
@@ -69,7 +80,8 @@ const CheckoutContent = () => {
       mobileMethod,
       bankDetails,
       customerInfo,
-      !!location.state?.singleItem
+      !!location.state?.singleItem,
+      mobileDetails
     );
   };
 
@@ -90,6 +102,7 @@ const CheckoutContent = () => {
             onPaymentMethodChange={setPaymentMethod}
             onMobileMethodChange={setMobileMethod}
             onBankDetailsChange={setBankDetails}
+            onMobileDetailsChange={setMobileDetails}
           />
         </div>
 
@@ -99,7 +112,11 @@ const CheckoutContent = () => {
             total={total}
             loading={loading}
             onSubmit={handleSubmit}
-            disabled={!paymentMethod || (paymentMethod === "mobile" && !mobileMethod)}
+            disabled={
+              !paymentMethod || 
+              (paymentMethod === "mobile" && (!mobileMethod || !mobileDetails.phoneNumber || !mobileDetails.transactionId)) ||
+              (paymentMethod === "bank" && (!bankDetails.bankName || !bankDetails.accountNumber || !bankDetails.transactionId))
+            }
             onQuantityChange={updateItemQuantity}
           />
         </div>
