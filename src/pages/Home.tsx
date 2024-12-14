@@ -7,11 +7,18 @@ import { Search, Heart, ShoppingCart } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { UserData } from "@/types/user";
+import { Medicine } from "@/types/medicine";
+import { getLikedMedicines, toggleLike, addToCart } from "@/lib/medicines";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [companies, setCompanies] = useState<UserData[]>([]);
+  const [likedMedicines, setLikedMedicines] = useState<Medicine[]>([]);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -29,8 +36,76 @@ export const Home = () => {
       }
     };
 
+    const fetchLikedMedicines = async () => {
+      if (user) {
+        const medicines = await getLikedMedicines(user.uid);
+        setLikedMedicines(medicines);
+      }
+    };
+
     fetchCompanies();
-  }, []);
+    fetchLikedMedicines();
+  }, [user]);
+
+  const handleLike = async (medicineId: string) => {
+    if (!user) {
+      toast({
+        title: "Please login",
+        description: "You need to be logged in to like medicines",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+
+    const isNowLiked = await toggleLike(user.uid, medicineId);
+    if (isNowLiked) {
+      toast({
+        title: "Added to favorites",
+        description: "Medicine has been added to your favorites",
+      });
+    } else {
+      toast({
+        title: "Removed from favorites",
+        description: "Medicine has been removed from your favorites",
+      });
+    }
+
+    // Refresh liked medicines
+    const medicines = await getLikedMedicines(user.uid);
+    setLikedMedicines(medicines);
+  };
+
+  const handleAddToCart = async (medicine: Medicine) => {
+    if (!user) {
+      toast({
+        title: "Please login",
+        description: "You need to be logged in to add items to cart",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+
+    await addToCart(user.uid, medicine);
+    toast({
+      title: "Added to cart",
+      description: "Medicine has been added to your cart",
+    });
+  };
+
+  const handleBuy = (medicineId: string) => {
+    if (!user) {
+      toast({
+        title: "Please login",
+        description: "You need to be logged in to purchase medicines",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+    navigate(`/medicine/${medicineId}`);
+  };
 
   return (
     <div className="space-y-8 py-4">
@@ -93,30 +168,47 @@ export const Home = () => {
         <section className="container mx-auto px-4">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Your Favorites</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {/* Example Medicine Card */}
-            <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
-              <img
-                src="/placeholder.svg"
-                alt="Medicine"
-                className="w-full h-32 object-cover rounded-t-xl"
-              />
-              <div className="p-4">
-                <h3 className="text-base font-medium mb-1">Medicine Name</h3>
-                <p className="text-sm text-gray-600 mb-3">Company Name</p>
-                <div className="flex justify-between items-center">
-                  <span className="text-base font-bold text-green-600">$99.99</span>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <ShoppingCart className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700">Buy</Button>
+            {likedMedicines.map((medicine) => (
+              <div key={medicine.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
+                <img
+                  src={medicine.image || "/placeholder.svg"}
+                  alt={medicine.name}
+                  className="w-full h-32 object-cover rounded-t-xl"
+                />
+                <div className="p-4">
+                  <h3 className="text-base font-medium mb-1">{medicine.name}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{medicine.description}</p>
+                  <div className="flex justify-between items-center">
+                    <span className="text-base font-bold text-green-600">${medicine.price}</span>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleLike(medicine.id)}
+                      >
+                        <Heart className="h-4 w-4 fill-current" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleAddToCart(medicine)}
+                      >
+                        <ShoppingCart className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={() => handleBuy(medicine.id)}
+                      >
+                        Buy
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </section>
       )}

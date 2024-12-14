@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Medicine } from "@/types/medicine";
+import { toggleLike, addToCart, isLiked } from "@/lib/medicines";
 
 export const CompanyMedicines = () => {
   const { id } = useParams();
@@ -15,6 +16,7 @@ export const CompanyMedicines = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [likedMedicines, setLikedMedicines] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const fetchMedicines = async () => {
@@ -27,6 +29,16 @@ export const CompanyMedicines = () => {
           ...doc.data(),
         })) as Medicine[];
         setMedicines(medicinesData);
+
+        // Fetch liked status for each medicine if user is logged in
+        if (user) {
+          const likedSet = new Set<string>();
+          for (const medicine of medicinesData) {
+            const liked = await isLiked(user.uid, medicine.id);
+            if (liked) likedSet.add(medicine.id);
+          }
+          setLikedMedicines(likedSet);
+        }
       } catch (error) {
         console.error("Error fetching medicines:", error);
         toast({
@@ -40,46 +52,65 @@ export const CompanyMedicines = () => {
     if (id) {
       fetchMedicines();
     }
-  }, [id, toast]);
+  }, [id, toast, user]);
 
-  const requireAuth = (action: () => void) => {
+  const handleLike = async (medicineId: string) => {
     if (!user) {
       toast({
         title: "Authentication required",
-        description: "Please login to perform this action",
+        description: "Please login to add to favorites",
         variant: "destructive",
       });
       navigate("/login");
       return;
     }
-    action();
-  };
 
-  const handleLike = (medicineId: string) => {
-    requireAuth(() => {
-      toast({
-        title: "Added to favorites",
-        description: "Medicine has been added to your favorites",
-      });
+    const isNowLiked = await toggleLike(user.uid, medicineId);
+    setLikedMedicines(prev => {
+      const newSet = new Set(prev);
+      if (isNowLiked) {
+        newSet.add(medicineId);
+      } else {
+        newSet.delete(medicineId);
+      }
+      return newSet;
+    });
+
+    toast({
+      title: isNowLiked ? "Added to favorites" : "Removed from favorites",
+      description: `Medicine has been ${isNowLiked ? "added to" : "removed from"} your favorites`,
     });
   };
 
-  const handleAddToCart = (medicineId: string) => {
-    requireAuth(() => {
+  const handleAddToCart = async (medicine: Medicine) => {
+    if (!user) {
       toast({
-        title: "Added to cart",
-        description: "Medicine has been added to your cart",
+        title: "Authentication required",
+        description: "Please login to add to cart",
+        variant: "destructive",
       });
+      navigate("/login");
+      return;
+    }
+
+    await addToCart(user.uid, medicine);
+    toast({
+      title: "Added to cart",
+      description: "Medicine has been added to your cart",
     });
   };
 
   const handleBuy = (medicineId: string) => {
-    requireAuth(() => {
+    if (!user) {
       toast({
-        title: "Proceeding to checkout",
-        description: "Redirecting to payment page",
+        title: "Authentication required",
+        description: "Please login to purchase medicines",
+        variant: "destructive",
       });
-    });
+      navigate("/login");
+      return;
+    }
+    navigate(`/medicine/${medicineId}`);
   };
 
   return (
@@ -105,16 +136,16 @@ export const CompanyMedicines = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8"
+                className={`h-8 w-8 ${likedMedicines.has(medicine.id) ? "text-red-500" : ""}`}
                 onClick={() => handleLike(medicine.id)}
               >
-                <Heart className="h-4 w-4" />
+                <Heart className={`h-4 w-4 ${likedMedicines.has(medicine.id) ? "fill-current" : ""}`} />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-8 w-8"
-                onClick={() => handleAddToCart(medicine.id)}
+                onClick={() => handleAddToCart(medicine)}
               >
                 <ShoppingCart className="h-4 w-4" />
               </Button>
