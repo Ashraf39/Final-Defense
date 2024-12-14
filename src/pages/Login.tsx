@@ -9,16 +9,14 @@ import { doc, getDoc } from "firebase/firestore";
 
 export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -39,21 +37,22 @@ export const Login = () => {
       });
     } catch (error) {
       const authError = error as AuthError;
-      if (authError.code === "auth/invalid-login-credentials") {
-        toast({
-          title: "Invalid credentials",
-          description: "The email or password you entered is incorrect",
-          variant: "destructive",
-          duration: 3000,
-        });
-      } else {
-        toast({
-          title: "Login failed",
-          description: "An error occurred while trying to log in. Please try again.",
-          variant: "destructive",
-          duration: 3000,
-        });
+      let errorMessage = "An error occurred while trying to log in. Please try again.";
+
+      if (authError.code === "auth/invalid-login-credentials" || 
+          authError.code === "auth/user-not-found" || 
+          authError.code === "auth/wrong-password") {
+        errorMessage = "Invalid email or password. Please check your credentials and try again.";
+      } else if (authError.code === "auth/too-many-requests") {
+        errorMessage = "Too many failed login attempts. Please try again later.";
       }
+
+      toast({
+        title: "Login failed",
+        description: errorMessage,
+        variant: "destructive",
+        duration: 3000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +76,8 @@ export const Login = () => {
             <Input
               type="email"
               id="email"
-              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               className="mt-1"
               required
@@ -90,7 +90,8 @@ export const Login = () => {
             <Input
               type="password"
               id="password"
-              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               className="mt-1"
               required
