@@ -9,8 +9,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SearchSection } from "@/components/home/SearchSection";
+import { SearchResults } from "@/components/home/SearchResults";
 import { CompanySection } from "@/components/home/CompanySection";
 import { FavoritesSection } from "@/components/home/FavoritesSection";
+import { useSearch } from "@/hooks/useSearch";
 
 export const Home = () => {
   const { user } = useAuth();
@@ -19,6 +21,7 @@ export const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [companies, setCompanies] = useState<UserData[]>([]);
   const [likedMedicines, setLikedMedicines] = useState<Medicine[]>([]);
+  const { medicines: searchResults, companies: companyResults, isLoading } = useSearch(searchQuery);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -97,6 +100,11 @@ export const Home = () => {
     <div className="space-y-8 py-4">
       <HeroSection />
       <SearchSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <SearchResults 
+        medicines={searchResults} 
+        companies={companyResults} 
+        isLoading={isLoading} 
+      />
       <CompanySection companies={companies} />
       {user && (
         <FavoritesSection
