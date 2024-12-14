@@ -4,9 +4,10 @@ import { db } from "@/lib/firebase";
 import { collection, query, where, orderBy, getDocs, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { Loader2, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 interface OrderItem {
   medicineId: string;
@@ -44,6 +45,7 @@ export const Orders = () => {
   const { user, userRole } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [indexError, setIndexError] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -55,13 +57,13 @@ export const Orders = () => {
         let q;
 
         if (userRole === "company") {
-          // For companies, fetch all orders and filter for their medicines
           const companyMedicinesSnapshot = await getDocs(
             query(collection(db, "medicines"), where("companyId", "==", user.uid))
           );
           const companyMedicineIds = companyMedicinesSnapshot.docs.map(doc => doc.id);
           
-          q = query(ordersRef, orderBy("createdAt", "desc"));
+          // For companies, we don't need to sort by createdAt initially
+          q = query(ordersRef);
           
           const querySnapshot = await getDocs(q);
           const allOrders = querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
@@ -75,23 +77,43 @@ export const Orders = () => {
             order.items.some(item => companyMedicineIds.includes(item.medicineId))
           );
 
+          // Sort after filtering
+          companyOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+          
           setOrders(companyOrders);
         } else {
-          // For regular users, fetch their orders
-          q = query(
-            ordersRef,
-            where("userId", "==", user.uid),
-            orderBy("createdAt", "desc")
-          );
-
-          const querySnapshot = await getDocs(q);
-          const userOrders = querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
-            id: doc.id,
-            ...doc.data(),
-            createdAt: doc.data().createdAt.toDate(),
-          })) as Order[];
-
-          setOrders(userOrders);
+          // For regular users
+          try {
+            q = query(
+              ordersRef,
+              where("userId", "==", user.uid),
+              orderBy("createdAt", "desc")
+            );
+            const querySnapshot = await getDocs(q);
+            const userOrders = querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
+              id: doc.id,
+              ...doc.data(),
+              createdAt: doc.data().createdAt.toDate(),
+            })) as Order[];
+            setOrders(userOrders);
+          } catch (error: any) {
+            if (error.code === 'failed-precondition') {
+              setIndexError(error.message);
+              // Fallback query without sorting
+              q = query(ordersRef, where("userId", "==", user.uid));
+              const querySnapshot = await getDocs(q);
+              const userOrders = querySnapshot.docs.map((doc: QueryDocumentSnapshot<DocumentData>) => ({
+                id: doc.id,
+                ...doc.data(),
+                createdAt: doc.data().createdAt.toDate(),
+              })) as Order[];
+              // Sort in memory
+              userOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+              setOrders(userOrders);
+            } else {
+              throw error;
+            }
+          }
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -129,6 +151,21 @@ export const Orders = () => {
       <h1 className="text-2xl font-bold mb-6">
         {userRole === "company" ? "Company Orders" : "My Orders"}
       </h1>
+
+      {indexError && (
+        <Card className="p-4 mb-6 bg-yellow-50 border-yellow-200">
+          <p className="text-yellow-800 mb-2">
+            Note: The order list might need a moment to optimize. Please click the button below to create the necessary index:
+          </p>
+          <Button
+            onClick={() => window.open(indexError.split("here: ")[1], '_blank')}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            Create Index <ExternalLink className="h-4 w-4" />
+          </Button>
+        </Card>
+      )}
 
       <div className="space-y-6">
         {orders.length === 0 ? (
