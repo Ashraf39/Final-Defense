@@ -5,7 +5,13 @@ interface MobilePaymentConfig {
   transactionId?: string;
 }
 
-export const processMobilePayment = async (config: MobilePaymentConfig) => {
+interface MobilePaymentResponse {
+  success: boolean;
+  transactionId: string;
+  message: string;
+}
+
+export const processMobilePayment = async (config: MobilePaymentConfig): Promise<MobilePaymentResponse> => {
   // This is a mock implementation. In a real application, you would integrate with actual payment gateways
   return new Promise((resolve, reject) => {
     // Simulate API call
