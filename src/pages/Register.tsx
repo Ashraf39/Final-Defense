@@ -30,6 +30,17 @@ export const Register = () => {
     const companyDescription = role === "company" ? formData.get("companyDescription") as string : undefined;
     const companyLicense = role === "company" ? formData.get("companyLicense") as string : undefined;
 
+    // Validate password length
+    if (password.length < 6) {
+      toast({
+        title: "Invalid password",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
       // Create authentication record
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
