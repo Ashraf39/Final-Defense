@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,12 +11,22 @@ import { ShoppingCart, Package, User, LogOut, LayoutDashboard } from "lucide-rea
 
 export const Navbar = () => {
   const { user, userRole, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (user && userRole === "company") {
+      navigate("/dashboard");
+    } else {
+      navigate("/");
+    }
+  };
 
   return (
     <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold text-primary">
+          <Link to="/" onClick={handleHomeClick} className="text-2xl font-bold text-primary">
             PharmaCare
           </Link>
 
