@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Home, ShoppingCart, Package, User, LogOut, LayoutDashboard } from "lucide-react";
+import { Home, ShoppingCart, Package, User, LogOut, LayoutDashboard, Boxes } from "lucide-react";
 import { useEffect, useState } from "react";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -134,7 +134,7 @@ export const Navbar = () => {
                     size="icon"
                     className="hover:scale-110 transition-transform duration-200"
                   >
-                    <Package className="h-5 w-5 text-gray-600" />
+                    <Boxes className="h-5 w-5 text-gray-600" />
                   </Button>
                 </Link>
                 <Link to="/orders">
