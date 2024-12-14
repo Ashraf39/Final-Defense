@@ -1,13 +1,17 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingCart, CreditCard } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const CompanyMedicines = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [medicines] = useState([
     {
       id: 1,
@@ -26,24 +30,43 @@ export const CompanyMedicines = () => {
     // Add more medicines as needed
   ]);
 
+  const requireAuth = (action: () => void) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please login to perform this action",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+    action();
+  };
+
   const handleLike = (medicineId: number) => {
-    toast({
-      title: "Added to favorites",
-      description: "Medicine has been added to your favorites",
+    requireAuth(() => {
+      toast({
+        title: "Added to favorites",
+        description: "Medicine has been added to your favorites",
+      });
     });
   };
 
   const handleAddToCart = (medicineId: number) => {
-    toast({
-      title: "Added to cart",
-      description: "Medicine has been added to your cart",
+    requireAuth(() => {
+      toast({
+        title: "Added to cart",
+        description: "Medicine has been added to your cart",
+      });
     });
   };
 
   const handleBuy = (medicineId: number) => {
-    toast({
-      title: "Proceeding to checkout",
-      description: "Redirecting to payment page",
+    requireAuth(() => {
+      toast({
+        title: "Proceeding to checkout",
+        description: "Redirecting to payment page",
+      });
     });
   };
 
