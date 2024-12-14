@@ -2,18 +2,27 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Card } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 interface OrderItem {
   medicineId: string;
   name: string;
   quantity: number;
   price: number;
+}
+
+interface UserData {
+  displayName: string;
+  phoneNumber: string;
+  address: string;
+  email: string;
 }
 
 export const Checkout = () => {
@@ -26,18 +35,37 @@ export const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [mobileMethod, setMobileMethod] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userFormData, setUserFormData] = useState({
+    displayName: "",
+    phoneNumber: "",
+    address: "",
+    email: "",
+  });
 
   useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data() as UserData;
+        setUserData(data);
+        setUserFormData({
+          displayName: data.displayName || "",
+          phoneNumber: data.phoneNumber || "",
+          address: data.address || "",
+          email: data.email || "",
+        });
+      }
+    };
+
     const fetchItems = async () => {
       if (!user) return;
-
       try {
         if (location.state?.singleItem) {
-          // Single item purchase
           setItems([location.state.singleItem]);
           setTotal(location.state.singleItem.price * location.state.singleItem.quantity);
         } else {
-          // Cart items purchase
           const cartRef = collection(db, "cartItems");
           const q = query(cartRef, where("userId", "==", user.uid));
           const querySnapshot = await getDocs(q);
@@ -60,8 +88,13 @@ export const Checkout = () => {
       }
     };
 
+    fetchUserData();
     fetchItems();
   }, [user, location.state]);
+
+  const generateInvoiceNumber = () => {
+    return `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  };
 
   const handleSubmitOrder = async () => {
     if (!user) return;
@@ -69,16 +102,20 @@ export const Checkout = () => {
     try {
       setLoading(true);
       
-      // Create order in Firebase
-      await addDoc(collection(db, "orders"), {
+      const invoiceNumber = generateInvoiceNumber();
+      const orderData = {
         userId: user.uid,
         items: items,
         total: total,
         paymentMethod: paymentMethod,
         mobileMethod: mobileMethod,
         status: "pending",
-        createdAt: new Date()
-      });
+        createdAt: new Date(),
+        invoiceNumber,
+        customerInfo: userFormData,
+      };
+
+      await addDoc(collection(db, "orders"), orderData);
 
       // Clear cart if coming from cart page
       if (!location.state?.singleItem) {
@@ -122,30 +159,50 @@ export const Checkout = () => {
       <h1 className="text-2xl font-bold mb-6">Checkout</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
+        <div className="space-y-6">
           <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+            <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
             <div className="space-y-4">
-              {items.map((item, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-                  </div>
-                  <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-                </div>
-              ))}
-              <div className="border-t pt-4">
-                <div className="flex justify-between items-center">
-                  <p className="font-semibold">Total:</p>
-                  <p className="font-semibold">${total.toFixed(2)}</p>
-                </div>
+              <div>
+                <Label htmlFor="displayName">Full Name</Label>
+                <Input
+                  id="displayName"
+                  value={userFormData.displayName}
+                  onChange={(e) => setUserFormData(prev => ({ ...prev, displayName: e.target.value }))}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={userFormData.email}
+                  onChange={(e) => setUserFormData(prev => ({ ...prev, email: e.target.value }))}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
+                  id="phoneNumber"
+                  value={userFormData.phoneNumber}
+                  onChange={(e) => setUserFormData(prev => ({ ...prev, phoneNumber: e.target.value }))}
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="address">Delivery Address</Label>
+                <Input
+                  id="address"
+                  value={userFormData.address}
+                  onChange={(e) => setUserFormData(prev => ({ ...prev, address: e.target.value }))}
+                  required
+                />
               </div>
             </div>
           </Card>
-        </div>
 
-        <div>
           <Card className="p-6">
             <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
             <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-4">
@@ -183,13 +240,43 @@ export const Checkout = () => {
               </div>
             )}
           </Card>
+        </div>
+
+        <div>
+          <Card className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+            <div className="space-y-4">
+              {items.map((item, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <div>
+                    <p className="font-medium">{item.name}</p>
+                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                  </div>
+                  <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+              ))}
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center">
+                  <p className="font-semibold">Total:</p>
+                  <p className="font-semibold">${total.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+          </Card>
 
           <Button
             className="w-full mt-6"
             onClick={handleSubmitOrder}
             disabled={!paymentMethod || (paymentMethod === "mobile" && !mobileMethod) || loading}
           >
-            {loading ? "Processing..." : "Place Order"}
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Place Order"
+            )}
           </Button>
         </div>
       </div>
