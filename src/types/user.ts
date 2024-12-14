@@ -9,6 +9,7 @@ export interface UserData {
   companyDescription?: string;
   companyLicense?: string;
   companyLogo?: string;
+  profileImage?: string;
   createdAt: Date;
   updatedAt: Date;
 }

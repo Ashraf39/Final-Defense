@@ -7,15 +7,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Home, ShoppingCart, Package, User, LogOut, LayoutDashboard, Boxes } from "lucide-react";
 import { useEffect, useState } from "react";
-import { collection, query, where, onSnapshot } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export const Navbar = () => {
   const { user, userRole, logout } = useAuth();
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
+  const [profileImage, setProfileImage] = useState<string | undefined>();
 
   useEffect(() => {
     if (user) {
@@ -31,9 +33,19 @@ export const Navbar = () => {
         setCartCount(totalQuantity);
       });
 
+      // Fetch user profile image
+      const fetchProfileImage = async () => {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setProfileImage(userDoc.data().profileImage);
+        }
+      };
+      fetchProfileImage();
+
       return () => unsubscribe();
     } else {
       setCartCount(0);
+      setProfileImage(undefined);
     }
   }, [user]);
 
@@ -153,11 +165,16 @@ export const Navbar = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button 
-                    variant="ghost" 
+                    variant="ghost"
                     size="icon"
                     className="hover:scale-110 transition-transform duration-200"
                   >
-                    <User className="h-5 w-5 text-gray-600" />
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={profileImage} />
+                      <AvatarFallback>
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48 animate-in slide-in-from-top-2 duration-200">
