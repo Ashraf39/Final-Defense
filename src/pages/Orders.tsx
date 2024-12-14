@@ -5,6 +5,8 @@ import { collection, query, where, orderBy, getDocs, DocumentData, QueryDocument
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { OrderCard } from "@/components/orders/OrderCard";
+import { Card } from "@/components/ui/card";
+import { Order } from "@/types/order";
 
 export const Orders = () => {
   const { user, userRole } = useAuth();

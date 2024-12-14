@@ -1,4 +1,5 @@
-import { Card } from "@/components/ui/card";
+import { Order } from "@/types/order";
+import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
 import { OrderStatusManager } from "./OrderStatusManager";
 
