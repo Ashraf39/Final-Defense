@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
 import { collection, query, where, orderBy, getDocs, DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { Card } from "@/components/ui/card";
 import { Order } from "@/types/order";
@@ -36,6 +36,7 @@ export const Orders = () => {
           q = query(ordersRef);
         } else {
           try {
+            // First try with ordering
             q = query(
               ordersRef,
               where("userId", "==", user.uid),
@@ -43,6 +44,7 @@ export const Orders = () => {
             );
           } catch (error: any) {
             if (error.code === 'failed-precondition') {
+              // If index doesn't exist, fall back to simple query
               setIndexError(error.message);
               q = query(ordersRef, where("userId", "==", user.uid));
             } else {
@@ -58,7 +60,7 @@ export const Orders = () => {
           createdAt: doc.data().createdAt.toDate(),
         })) as Order[];
 
-        // Sort orders by date if needed
+        // Sort orders by date if needed (in case we couldn't use orderBy in query)
         fetchedOrders.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         
         setOrders(fetchedOrders);
