@@ -21,4 +21,10 @@ export interface Order {
   status: string;
   userId: string;
   createdAt: Date;
+  items: {
+    medicineId: string;
+    name: string;
+    quantity: number;
+    price: number;
+  }[];
 }
