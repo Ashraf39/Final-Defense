@@ -1,17 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Heart, ShoppingCart } from "lucide-react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export const Home = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const [companies, setCompanies] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const companiesCollection = collection(db, "companies");
+        const companiesSnapshot = await getDocs(companiesCollection);
+        const companiesData = companiesSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setCompanies(companiesData);
+      } catch (error) {
+        console.error("Error fetching companies:", error);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
 
   return (
     <div className="space-y-8 py-4">
-      {/* Hero Section - Reduced height */}
+      {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-600 to-green-400 text-white py-12">
         <div className="container mx-auto text-center">
           <h1 className="text-3xl md:text-5xl font-bold mb-4">
@@ -23,7 +44,7 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Search Section - Beautified */}
+      {/* Search Section */}
       <section className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           <div className="flex gap-2 p-3 bg-white rounded-full shadow-lg border border-green-100">
@@ -42,27 +63,30 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Companies Section - Smaller and rounder tiles */}
+      {/* Companies Section */}
       <section className="container mx-auto px-4">
         <h2 className="text-2xl font-bold mb-6 text-gray-800">Featured Companies</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {/* Example Company Card */}
-          <Link
-            to="/company/1"
-            className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 border border-green-100 group"
-          >
-            <img
-              src="/placeholder.svg"
-              alt="Company Logo"
-              className="w-16 h-16 mx-auto mb-3"
-            />
-            <h3 className="text-lg font-medium text-center text-gray-800 group-hover:text-green-600">Company Name</h3>
-          </Link>
-          {/* Add more company cards here */}
+          {companies.map((company) => (
+            <Link
+              key={company.id}
+              to={`/company/${company.id}`}
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-4 border border-green-100 group"
+            >
+              <img
+                src={company.logo || "/placeholder.svg"}
+                alt={`${company.name} Logo`}
+                className="w-16 h-16 mx-auto mb-3 object-contain"
+              />
+              <h3 className="text-lg font-medium text-center text-gray-800 group-hover:text-green-600">
+                {company.name}
+              </h3>
+            </Link>
+          ))}
         </div>
       </section>
 
-      {/* Favorites Section - Smaller and rounder tiles */}
+      {/* Favorites Section */}
       {user && (
         <section className="container mx-auto px-4">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Your Favorites</h2>
@@ -91,7 +115,6 @@ export const Home = () => {
                 </div>
               </div>
             </div>
-            {/* Add more medicine cards here */}
           </div>
         </section>
       )}
