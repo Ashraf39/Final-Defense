@@ -13,6 +13,7 @@ import { CompanyMedicines } from "@/pages/CompanyMedicines";
 import { Cart } from "@/pages/Cart";
 import { Orders } from "@/pages/Orders";
 import { Checkout } from "@/pages/Checkout";
+import { Inventory } from "@/pages/Inventory";
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
               <Route path="/cart" element={<Cart />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/inventory" element={<Inventory />} />
             </Routes>
           </main>
           <Footer />

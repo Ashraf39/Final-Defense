@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { collection, query, where, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Medicine } from "@/types/medicine";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit2, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Table,
@@ -15,9 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EditMedicineDialog } from "@/components/inventory/EditMedicineDialog";
-import { AddMedicineDialog } from "@/components/inventory/AddMedicineDialog";
-import { DeleteMedicineDialog } from "@/components/inventory/DeleteMedicineDialog";
 
 export const Inventory = () => {
   const { user, userRole } = useAuth();
@@ -25,10 +22,6 @@ export const Inventory = () => {
   const { toast } = useToast();
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (!user || userRole !== "company") {
@@ -61,37 +54,6 @@ export const Inventory = () => {
     fetchMedicines();
   }, [user, userRole, navigate, toast]);
 
-  const handleMedicineUpdated = (updatedMedicine: Medicine) => {
-    setMedicines((prev) =>
-      prev.map((medicine) =>
-        medicine.id === updatedMedicine.id ? updatedMedicine : medicine
-      )
-    );
-    setIsEditDialogOpen(false);
-    toast({
-      title: "Success",
-      description: "Medicine updated successfully",
-    });
-  };
-
-  const handleMedicineAdded = (newMedicine: Medicine) => {
-    setMedicines((prev) => [...prev, newMedicine]);
-    setIsAddDialogOpen(false);
-    toast({
-      title: "Success",
-      description: "Medicine added successfully",
-    });
-  };
-
-  const handleMedicineDeleted = (medicineId: string) => {
-    setMedicines((prev) => prev.filter((medicine) => medicine.id !== medicineId));
-    setIsDeleteDialogOpen(false);
-    toast({
-      title: "Success",
-      description: "Medicine deleted successfully",
-    });
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -100,7 +62,7 @@ export const Inventory = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Inventory Management</h1>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
+        <Button>
           <Plus className="mr-2 h-4 w-4" /> Add Medicine
         </Button>
       </div>
@@ -127,25 +89,11 @@ export const Inventory = () => {
                 <TableCell>{medicine.stock}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedMedicine(medicine);
-                        setIsEditDialogOpen(true);
-                      }}
-                    >
-                      <Edit2 className="h-4 w-4" />
+                    <Button variant="ghost" size="sm">
+                      Edit
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedMedicine(medicine);
-                        setIsDeleteDialogOpen(true);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
+                    <Button variant="ghost" size="sm">
+                      Delete
                     </Button>
                   </div>
                 </TableCell>
@@ -154,30 +102,6 @@ export const Inventory = () => {
           </TableBody>
         </Table>
       </div>
-
-      <AddMedicineDialog
-        open={isAddDialogOpen}
-        onOpenChange={setIsAddDialogOpen}
-        onMedicineAdded={handleMedicineAdded}
-        userId={user?.uid || ""}
-      />
-
-      {selectedMedicine && (
-        <>
-          <EditMedicineDialog
-            open={isEditDialogOpen}
-            onOpenChange={setIsEditDialogOpen}
-            medicine={selectedMedicine}
-            onMedicineUpdated={handleMedicineUpdated}
-          />
-          <DeleteMedicineDialog
-            open={isDeleteDialogOpen}
-            onOpenChange={setIsDeleteDialogOpen}
-            medicine={selectedMedicine}
-            onMedicineDeleted={handleMedicineDeleted}
-          />
-        </>
-      )}
     </div>
   );
 };
