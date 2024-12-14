@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
-import { Button } from "@/components/ui/button";
+import { collection, query, where, getDocs, addDoc, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useToast } from "@/components/ui/use-toast";
 import { processMobilePayment } from "@/lib/payment";
 import { CustomerInfoForm } from "@/components/checkout/CustomerInfoForm";
@@ -98,6 +97,28 @@ export const Checkout = () => {
     fetchUserData();
     fetchItems();
   }, [user, location.state]);
+
+  const handleQuantityChange = async (medicineId: string, newQuantity: number) => {
+    const updatedItems = items.map(item =>
+      item.medicineId === medicineId ? { ...item, quantity: newQuantity } : item
+    );
+    setItems(updatedItems);
+    setTotal(updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+
+    if (!location.state?.singleItem && user) {
+      try {
+        const cartItemRef = doc(db, "cartItems", `${user.uid}_${medicineId}`);
+        await updateDoc(cartItemRef, { quantity: newQuantity });
+      } catch (error) {
+        console.error("Error updating quantity:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update quantity",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   const generateInvoiceNumber = () => {
     return `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -209,6 +230,7 @@ export const Checkout = () => {
             loading={loading}
             onSubmit={handleSubmitOrder}
             disabled={!paymentMethod || (paymentMethod === "mobile" && !mobileMethod)}
+            onQuantityChange={handleQuantityChange}
           />
         </div>
       </div>

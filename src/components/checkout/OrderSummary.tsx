@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { OrderItem } from "./OrderItem";
 
-interface OrderItem {
+interface OrderItemType {
   medicineId: string;
   name: string;
   quantity: number;
@@ -10,27 +11,35 @@ interface OrderItem {
 }
 
 interface OrderSummaryProps {
-  items: OrderItem[];
+  items: OrderItemType[];
   total: number;
   loading: boolean;
   onSubmit: () => void;
   disabled: boolean;
+  onQuantityChange: (medicineId: string, quantity: number) => void;
 }
 
-export const OrderSummary = ({ items, total, loading, onSubmit, disabled }: OrderSummaryProps) => {
+export const OrderSummary = ({ 
+  items, 
+  total, 
+  loading, 
+  onSubmit, 
+  disabled,
+  onQuantityChange 
+}: OrderSummaryProps) => {
   return (
     <>
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
         <div className="space-y-4">
-          {items.map((item, index) => (
-            <div key={index} className="flex justify-between items-center">
-              <div>
-                <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
-              </div>
-              <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-            </div>
+          {items.map((item) => (
+            <OrderItem
+              key={item.medicineId}
+              name={item.name}
+              quantity={item.quantity}
+              price={item.price}
+              onQuantityChange={(newQuantity) => onQuantityChange(item.medicineId, newQuantity)}
+            />
           ))}
           <div className="border-t pt-4">
             <div className="flex justify-between items-center">
