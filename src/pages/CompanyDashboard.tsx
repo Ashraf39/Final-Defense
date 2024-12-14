@@ -24,6 +24,7 @@ export const CompanyDashboard = () => {
     pendingOrders: 0
   });
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+  const [pendingOrders, setPendingOrders] = useState<Order[]>([]);
   const [popularProducts, setPopularProducts] = useState<Medicine[]>([]);
 
   useEffect(() => {
@@ -52,15 +53,19 @@ export const CompanyDashboard = () => {
         const companyMedicineIds = productsSnapshot.docs.map(doc => doc.id);
         console.log("Company medicine IDs:", companyMedicineIds);
 
-        // Calculate the timestamp for 7 days ago
+        // Calculate timestamps
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const thirtyDaysAgoTimestamp = Timestamp.fromDate(thirtyDaysAgo);
+
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const sevenDaysAgoTimestamp = Timestamp.fromDate(sevenDaysAgo);
 
-        // Fetch orders from the last 7 days
+        // Fetch orders from the last 30 days
         const ordersQuery = query(
           collection(db, "orders"),
-          where("createdAt", ">=", sevenDaysAgoTimestamp),
+          where("createdAt", ">=", thirtyDaysAgoTimestamp),
           orderBy("createdAt", "desc")
         );
         
@@ -77,23 +82,40 @@ export const CompanyDashboard = () => {
             )
           );
 
+        // Calculate monthly sales (sum of orders in last 30 days)
+        const monthlySales = recentOrdersData.reduce((total, order) => {
+          const companyItems = order.items.filter(item => 
+            companyMedicineIds.includes(item.medicineId)
+          );
+          const orderTotal = companyItems.reduce((sum, item) => 
+            sum + (item.price * item.quantity), 0
+          );
+          return total + orderTotal;
+        }, 0);
+
+        // Get pending orders
+        const pendingOrdersData = recentOrdersData
+          .filter(order => order.status === "pending")
+          .slice(0, 3);
+        setPendingOrders(pendingOrdersData);
+
         // Calculate active customers (unique users who ordered in last 7 days)
-        const activeCustomers = new Set(
-          recentOrdersData.map(order => order.userId)
-        ).size;
-        console.log("Active customers in last 7 days:", activeCustomers);
+        const recentCustomers = recentOrdersData
+          .filter(order => order.createdAt >= sevenDaysAgo)
+          .map(order => order.userId);
+        const activeCustomers = new Set(recentCustomers).size;
 
         // Get only the 3 most recent orders for display
         const latestOrders = recentOrdersData.slice(0, 3);
-        console.log("Recent orders found:", latestOrders.length);
         setRecentOrders(latestOrders);
 
-        // Update dashboard data with the correct counts
-        setDashboardData(prev => ({
-          ...prev,
+        // Update dashboard data
+        setDashboardData({
           totalProducts,
-          activeCustomers
-        }));
+          monthlySales,
+          activeCustomers,
+          pendingOrders: pendingOrdersData.length
+        });
 
         // Store products data for popular products section
         const productsData = productsSnapshot.docs.map(doc => ({
@@ -101,7 +123,7 @@ export const CompanyDashboard = () => {
           ...doc.data()
         })) as Medicine[];
         
-        // Sort by sales (if available) and take top 5
+        // Sort by sales and take top 5
         const sortedProducts = productsData
           .sort((a, b) => (b.sales || 0) - (a.sales || 0))
           .slice(0, 5);
@@ -154,7 +176,7 @@ export const CompanyDashboard = () => {
           {
             title: "Monthly Sales",
             value: `$${dashboardData.monthlySales.toFixed(2)}`,
-            description: "Revenue this month",
+            description: "Revenue in last 30 days",
             icon: "TrendingUp"
           },
           {
@@ -173,7 +195,17 @@ export const CompanyDashboard = () => {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <RecentOrders orders={recentOrders} />
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
+          <RecentOrders orders={recentOrders} />
+        </div>
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Pending Orders</h2>
+          <RecentOrders orders={pendingOrders} />
+        </div>
+      </div>
+
+      <div className="mt-6">
         <PopularProducts products={popularProducts} />
       </div>
     </div>
