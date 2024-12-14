@@ -118,15 +118,26 @@ export const Navbar = () => {
             )}
 
             {user && userRole === "company" && (
-              <Link to="/dashboard">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="hover:scale-110 transition-transform duration-200"
-                >
-                  <LayoutDashboard className="h-5 w-5 text-gray-600" />
-                </Button>
-              </Link>
+              <>
+                <Link to="/dashboard">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="hover:scale-110 transition-transform duration-200"
+                  >
+                    <LayoutDashboard className="h-5 w-5 text-gray-600" />
+                  </Button>
+                </Link>
+                <Link to="/orders">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="hover:scale-110 transition-transform duration-200"
+                  >
+                    <Package className="h-5 w-5 text-gray-600" />
+                  </Button>
+                </Link>
+              </>
             )}
 
             {user && (
