@@ -7,12 +7,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Home,
-  ShoppingBag,
-  Package,
-  LayoutDashboard,
-  Boxes,
-  Store
+  Compass,
+  ShoppingBasket,
+  ScrollText,
+  LayoutGrid,
+  PackageSearch,
+  Building2
 } from "lucide-react";
 
 interface NavbarIconProps {
@@ -46,7 +46,7 @@ export const NavbarIcon = ({ to, icon, tooltip, className = "" }: NavbarIconProp
 export const HomeIcon = () => (
   <NavbarIcon
     to="/"
-    icon={<Home className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<Compass className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
     tooltip="Home"
   />
 );
@@ -56,7 +56,7 @@ export const CartIcon = ({ count }: { count: number }) => (
     to="/cart"
     icon={
       <div className="relative">
-        <ShoppingBag className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />
+        <ShoppingBasket className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />
         {count > 0 && (
           <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-scale-in">
             {count}
@@ -71,7 +71,7 @@ export const CartIcon = ({ count }: { count: number }) => (
 export const OrdersIcon = () => (
   <NavbarIcon
     to="/orders"
-    icon={<Package className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<ScrollText className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
     tooltip="Orders"
   />
 );
@@ -79,7 +79,7 @@ export const OrdersIcon = () => (
 export const DashboardIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<LayoutDashboard className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<LayoutGrid className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
     tooltip="Dashboard"
   />
 );
@@ -87,7 +87,7 @@ export const DashboardIcon = () => (
 export const InventoryIcon = () => (
   <NavbarIcon
     to="/inventory"
-    icon={<Boxes className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<PackageSearch className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
     tooltip="Inventory"
   />
 );
@@ -95,7 +95,7 @@ export const InventoryIcon = () => (
 export const CompanyIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<Store className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<Building2 className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
     tooltip="Company Dashboard"
   />
 );
