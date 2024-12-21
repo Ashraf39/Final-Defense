@@ -7,7 +7,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  ShoppingBasket,
   ScrollText,
   LayoutGrid,
   PackageSearch,
@@ -57,7 +56,7 @@ export const CartIcon = ({ count }: { count: number }) => (
     to="/cart"
     icon={
       <div className="relative">
-        <ShoppingBasket className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />
+        <i className="fi fi-sr-shopping-cart text-2xl text-green-600 hover:text-green-700" />
         {count > 0 && (
           <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-scale-in">
             {count}
