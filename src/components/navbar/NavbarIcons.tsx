@@ -7,7 +7,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Compass,
   ShoppingBasket,
   ScrollText,
   LayoutGrid,
@@ -46,7 +45,9 @@ export const NavbarIcon = ({ to, icon, tooltip, className = "" }: NavbarIconProp
 export const HomeIcon = () => (
   <NavbarIcon
     to="/"
-    icon={<Compass className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={
+      <i className="fi fi-sr-home text-2xl text-green-600 hover:text-green-700" />
+    }
     tooltip="Home"
   />
 );
