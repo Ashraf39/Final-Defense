@@ -71,7 +71,7 @@ export const Navbar = () => {
           <Link 
             to="/" 
             onClick={handleHomeClick} 
-            className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent hover:opacity-80 transition-all duration-300 font-serif tracking-wide"
+            className="text-2xl font-bold text-primary hover:opacity-80 transition-all duration-300 font-serif tracking-wide"
           >
             PharmaCare
           </Link>

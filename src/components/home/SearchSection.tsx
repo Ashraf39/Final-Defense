@@ -11,7 +11,7 @@ export const SearchSection = ({ searchQuery, setSearchQuery }: SearchSectionProp
   return (
     <section className="container mx-auto px-4 -mt-8 relative z-10">
       <div className="max-w-2xl mx-auto">
-        <div className="flex gap-2 p-4 bg-white rounded-2xl shadow-lg border border-green-100 backdrop-blur-sm bg-white/90 hover:shadow-xl transition-all duration-300">
+        <div className="flex gap-2 p-2 bg-white rounded-2xl shadow-lg border border-green-100 backdrop-blur-sm bg-white/90 hover:shadow-xl transition-all duration-300">
           <div className="relative flex-grow">
             <Input
               type="text"
