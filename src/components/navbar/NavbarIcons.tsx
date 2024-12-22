@@ -6,12 +6,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  ScrollText,
-  LayoutGrid,
-  PackageSearch,
-  Building2
-} from "lucide-react";
+  faHome,
+  faShoppingCart,
+  faScroll,
+  faTableColumns,
+  faBoxes,
+  faBuilding
+} from '@fortawesome/free-solid-svg-icons';
 
 interface NavbarIconProps {
   to: string;
@@ -44,9 +47,7 @@ export const NavbarIcon = ({ to, icon, tooltip, className = "" }: NavbarIconProp
 export const HomeIcon = () => (
   <NavbarIcon
     to="/"
-    icon={
-      <i className="fi fi-sr-home text-2xl text-green-600 hover:text-green-700" />
-    }
+    icon={<FontAwesomeIcon icon={faHome} className="h-5 w-5 text-green-600 hover:text-green-700" />}
     tooltip="Home"
   />
 );
@@ -56,7 +57,7 @@ export const CartIcon = ({ count }: { count: number }) => (
     to="/cart"
     icon={
       <div className="relative">
-        <i className="fi fi-sr-shopping-cart text-2xl text-green-600 hover:text-green-700" />
+        <FontAwesomeIcon icon={faShoppingCart} className="h-5 w-5 text-green-600 hover:text-green-700" />
         {count > 0 && (
           <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-scale-in">
             {count}
@@ -71,7 +72,7 @@ export const CartIcon = ({ count }: { count: number }) => (
 export const OrdersIcon = () => (
   <NavbarIcon
     to="/orders"
-    icon={<ScrollText className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<FontAwesomeIcon icon={faScroll} className="h-5 w-5 text-green-600 hover:text-green-700" />}
     tooltip="Orders"
   />
 );
@@ -79,7 +80,7 @@ export const OrdersIcon = () => (
 export const DashboardIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<LayoutGrid className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<FontAwesomeIcon icon={faTableColumns} className="h-5 w-5 text-green-600 hover:text-green-700" />}
     tooltip="Dashboard"
   />
 );
@@ -87,7 +88,7 @@ export const DashboardIcon = () => (
 export const InventoryIcon = () => (
   <NavbarIcon
     to="/inventory"
-    icon={<PackageSearch className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<FontAwesomeIcon icon={faBoxes} className="h-5 w-5 text-green-600 hover:text-green-700" />}
     tooltip="Inventory"
   />
 );
@@ -95,7 +96,7 @@ export const InventoryIcon = () => (
 export const CompanyIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<Building2 className="h-6 w-6 text-green-600 hover:text-green-700" strokeWidth={1.5} />}
+    icon={<FontAwesomeIcon icon={faBuilding} className="h-5 w-5 text-green-600 hover:text-green-700" />}
     tooltip="Company Dashboard"
   />
 );
