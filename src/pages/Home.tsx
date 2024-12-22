@@ -8,7 +8,6 @@ import { getLikedMedicines, toggleLike, addToCart } from "@/lib/medicines";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { HeroSection } from "@/components/home/HeroSection";
-import { SearchSection } from "@/components/home/SearchSection";
 import { SearchResults } from "@/components/home/SearchResults";
 import { CompanySection } from "@/components/home/CompanySection";
 import { FavoritesSection } from "@/components/home/FavoritesSection";
@@ -98,8 +97,7 @@ export const Home = () => {
 
   return (
     <div className="space-y-8 py-4">
-      <HeroSection />
-      <SearchSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <HeroSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <SearchResults 
         medicines={searchResults} 
         companies={companyResults} 
