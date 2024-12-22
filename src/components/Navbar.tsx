@@ -34,7 +34,6 @@ export const Navbar = () => {
         setCartCount(totalQuantity);
       });
 
-      // Fetch user profile image
       const fetchProfileImage = async () => {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
@@ -60,16 +59,22 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm bg-white/80">
+    <nav className="bg-white/80 border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm transition-all duration-300">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link 
             to="/" 
             onClick={handleHomeClick} 
-            className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-400 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+            className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent hover:opacity-80 transition-all duration-300"
           >
             PharmaCare
           </Link>
+
+          <div className="hidden md:flex items-center gap-6 text-gray-600">
+            <Link to="/wellness" className="hover:text-primary transition-colors">Wellness</Link>
+            <Link to="/offers" className="hover:text-primary transition-colors">Offers</Link>
+            <Link to="/consult" className="hover:text-primary transition-colors">Consult</Link>
+          </div>
 
           <div className="flex items-center gap-2">
             {!user && (
@@ -77,7 +82,7 @@ export const Navbar = () => {
                 <HomeIcon />
                 <Link to="/login">
                   <Button 
-                    className="bg-green-600 hover:bg-green-700 transition-colors duration-200 hover:scale-105"
+                    className="bg-primary hover:bg-primary/90 transition-all duration-300 hover:scale-105"
                   >
                     Login
                   </Button>
