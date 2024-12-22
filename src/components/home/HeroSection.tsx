@@ -2,7 +2,7 @@ import { Star } from "lucide-react";
 
 export const HeroSection = () => {
   return (
-    <section className="relative overflow-hidden bg-[#F5DEB3] py-12">
+    <section className="relative overflow-hidden bg-[#f9fafb] py-12">
       <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
       
       <div className="container mx-auto text-center relative">
