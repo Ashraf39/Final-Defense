@@ -17,6 +17,7 @@ import { Checkout } from "@/pages/Checkout";
 import { Inventory } from "@/pages/Inventory";
 import { useAuth } from "@/contexts/AuthContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -75,20 +76,24 @@ const AppRoutes = () => {
 };
 
 const App = () => {
+  const location = useLocation();
+  const { user, userRole } = useAuth();
+  
+  // Check if we should hide the footer (on admin dashboard)
+  const hideFooter = location.pathname === '/admin' && user && userRole === 'admin';
+
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <div className="min-h-screen flex flex-col">
-            <Navbar />
-            <main className="flex-grow">
-              <AppRoutes />
-            </main>
-            <Footer />
-          </div>
+      <AuthProvider>
+        <div className="min-h-screen flex flex-col">
+          <Navbar />
+          <main className="flex-grow">
+            <AppRoutes />
+          </main>
+          {!hideFooter && <Footer />}
           <Toaster />
-        </AuthProvider>
-      </BrowserRouter>
+        </div>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };
