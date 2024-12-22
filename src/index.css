@@ -54,7 +54,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-[#f9fafb] text-foreground font-sans antialiased;
   }
 }
 
