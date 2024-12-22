@@ -1,68 +1,46 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth, db } from "@/lib/firebase";
-import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { createContext, useContext, useEffect, ReactNode } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
+import { auth, db } from "@/lib/firebase";
+import { useAuthStore } from "@/store/useAuthStore";
 
-interface AuthContextType {
-  user: User | null;
-  userRole: "regular" | "company" | "admin" | null;
-  loading: boolean;
-  logout: () => Promise<void>;
-}
+const AuthContext = createContext({});
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  userRole: null,
-  loading: true,
-  logout: async () => {},
-});
-
-export const useAuth = () => useContext(AuthContext);
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<"regular" | "company" | "admin" | null>(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const { setUser, setUserRole } = useAuthStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      
       if (user) {
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        setUserRole(userDoc.data()?.role || "regular");
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role);
+        }
       } else {
         setUserRole(null);
       }
-      setLoading(false);
     });
 
-    return unsubscribe;
-  }, []);
-
-  const logout = async () => {
-    try {
-      await signOut(auth);
-      navigate("/");
-      toast({
-        title: "Logged out successfully",
-        duration: 2000,
-      });
-    } catch (error) {
-      toast({
-        title: "Error logging out",
-        variant: "destructive",
-        duration: 2000,
-      });
-    }
-  };
+    return () => unsubscribe();
+  }, [setUser, setUserRole]);
 
   return (
-    <AuthContext.Provider value={{ user, userRole, loading, logout }}>
-      {!loading && children}
+    <AuthContext.Provider value={{}}>
+      {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const store = useAuthStore();
+  return {
+    user: store.user,
+    userRole: store.userRole,
+    logout: async () => {
+      await auth.signOut();
+      store.logout();
+    },
+  };
 };
