@@ -51,8 +51,14 @@ export const Navbar = () => {
 
   const handleHomeClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (user && userRole === "company") {
-      navigate("/dashboard");
+    if (user) {
+      if (userRole === "admin") {
+        navigate("/admin");
+      } else if (userRole === "company") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
     } else {
       navigate("/");
     }

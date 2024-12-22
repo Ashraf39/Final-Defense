@@ -42,7 +42,16 @@ const AppRoutes = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route 
+        path="/" 
+        element={
+          user && userRole === "admin" ? (
+            <Navigate to="/admin" replace />
+          ) : (
+            <Home />
+          )
+        } 
+      />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<Profile />} />
