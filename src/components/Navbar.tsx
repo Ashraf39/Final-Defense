@@ -71,16 +71,10 @@ export const Navbar = () => {
           <Link 
             to="/" 
             onClick={handleHomeClick} 
-            className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent hover:opacity-80 transition-all duration-300"
+            className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent hover:opacity-80 transition-all duration-300 font-serif tracking-wide"
           >
             PharmaCare
           </Link>
-
-          <div className="hidden md:flex items-center gap-6 text-gray-600">
-            <Link to="/wellness" className="hover:text-primary transition-colors">Wellness</Link>
-            <Link to="/offers" className="hover:text-primary transition-colors">Offers</Link>
-            <Link to="/consult" className="hover:text-primary transition-colors">Consult</Link>
-          </div>
 
           <div className="flex items-center gap-2">
             {!user && (
