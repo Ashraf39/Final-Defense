@@ -7,6 +7,13 @@ interface CompanySectionProps {
 }
 
 export const CompanySection = ({ companies }: CompanySectionProps) => {
+  const getImageUrl = (imageUrl: string | undefined) => {
+    if (!imageUrl || imageUrl === "") return "/placeholder.svg";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    if (imageUrl.startsWith("/")) return imageUrl;
+    return `/placeholder.svg`;
+  };
+
   return (
     <section className="container mx-auto px-4 py-8">
       <div className="flex items-center gap-2 mb-8">
@@ -26,9 +33,13 @@ export const CompanySection = ({ companies }: CompanySectionProps) => {
             </div>
             
             <img
-              src={company.companyLogo || "/placeholder.svg"}
+              src={getImageUrl(company.companyLogo)}
               alt={`${company.companyName} Logo`}
               className="w-20 h-20 mx-auto mb-4 object-contain group-hover:scale-110 transition-transform duration-300"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/placeholder.svg";
+              }}
             />
             
             <h3 className="text-lg font-medium text-center text-gray-800 group-hover:text-green-600 transition-colors">

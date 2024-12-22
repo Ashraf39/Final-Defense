@@ -9,6 +9,13 @@ interface SearchResultsProps {
 }
 
 export const SearchResults = ({ medicines, companies, isLoading }: SearchResultsProps) => {
+  const getImageUrl = (imageUrl: string | undefined) => {
+    if (!imageUrl || imageUrl === "") return "/placeholder.svg";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    if (imageUrl.startsWith("/")) return imageUrl;
+    return `/placeholder.svg`;
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 mt-4">
@@ -39,9 +46,13 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
               >
                 <div className="flex items-center gap-3">
                   <img
-                    src={company.companyLogo || "/placeholder.svg"}
+                    src={getImageUrl(company.companyLogo)}
                     alt={company.companyName}
                     className="w-12 h-12 object-contain rounded"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/placeholder.svg";
+                    }}
                   />
                   <div>
                     <h4 className="font-medium text-gray-900">{company.companyName}</h4>
@@ -66,9 +77,13 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
               >
                 <div className="flex items-center gap-3">
                   <img
-                    src={medicine.image || "/placeholder.svg"}
+                    src={getImageUrl(medicine.image)}
                     alt={medicine.name}
                     className="w-12 h-12 object-contain rounded"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "/placeholder.svg";
+                    }}
                   />
                   <div>
                     <h4 className="font-medium text-gray-900">{medicine.name}</h4>

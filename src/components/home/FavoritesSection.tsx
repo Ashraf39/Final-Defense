@@ -31,7 +31,6 @@ export const FavoritesSection = ({
       return;
     }
     
-    // Navigate to checkout with the single item
     navigate("/checkout", {
       state: {
         singleItem: {
@@ -44,6 +43,13 @@ export const FavoritesSection = ({
     });
   };
 
+  const getImageUrl = (imageUrl: string | undefined) => {
+    if (!imageUrl || imageUrl === "") return "/placeholder.svg";
+    if (imageUrl.startsWith("http")) return imageUrl;
+    if (imageUrl.startsWith("/")) return imageUrl;
+    return `/placeholder.svg`;
+  };
+
   return (
     <section className="container mx-auto px-4">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Your Favorites</h2>
@@ -51,9 +57,13 @@ export const FavoritesSection = ({
         {likedMedicines.map((medicine) => (
           <div key={medicine.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-green-100">
             <img
-              src={medicine.image || "/placeholder.svg"}
+              src={getImageUrl(medicine.image)}
               alt={medicine.name}
               className="w-full h-32 object-cover rounded-t-xl"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "/placeholder.svg";
+              }}
             />
             <div className="p-4">
               <h3 className="text-base font-medium mb-1">{medicine.name}</h3>
