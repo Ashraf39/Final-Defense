@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart, CreditCard } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Medicine } from "@/types/medicine";
 import { toggleLike, addToCart, isLiked } from "@/lib/medicines";
+import { MedicineCard } from "@/components/home/MedicineCard";
 
 export const CompanyMedicines = () => {
   const { id } = useParams();
@@ -30,7 +28,6 @@ export const CompanyMedicines = () => {
         })) as Medicine[];
         setMedicines(medicinesData);
 
-        // Fetch liked status for each medicine if user is logged in
         if (user) {
           const likedSet = new Set<string>();
           for (const medicine of medicinesData) {
@@ -128,60 +125,13 @@ export const CompanyMedicines = () => {
       <h1 className="text-2xl font-bold mb-6">Company Medicines</h1>
       <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
         {medicines.map((medicine) => (
-          <Card 
-            key={medicine.id} 
-            className="flex flex-col cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/medicine/${medicine.id}`)}
-          >
-            <CardContent className="p-2">
-              <img
-                src={medicine.image || "/placeholder.svg"}
-                alt={medicine.name}
-                className="w-full h-24 object-cover rounded-lg mb-2"
-              />
-              <h3 className="text-sm font-semibold mb-1 truncate">{medicine.name}</h3>
-              <p className="text-xs text-gray-600 mb-1 line-clamp-2">
-                {medicine.description}
-              </p>
-              <p className="text-primary font-bold text-sm">${medicine.price}</p>
-              <p className="text-xs text-gray-500">Stock: {medicine.stock}</p>
-            </CardContent>
-            <CardFooter className="flex justify-between items-center p-2 mt-auto">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleLike(medicine.id);
-                }}
-              >
-                <Heart className={`h-3 w-3 ${likedMedicines.has(medicine.id) ? "fill-current text-red-500" : ""}`} />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleAddToCart(medicine);
-                }}
-              >
-                <ShoppingCart className="h-3 w-3" />
-              </Button>
-              <Button 
-                size="sm"
-                className="h-6 text-xs px-2 py-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleBuy(medicine);
-                }}
-              >
-                <CreditCard className="h-3 w-3 mr-1" />
-                Buy
-              </Button>
-            </CardFooter>
-          </Card>
+          <MedicineCard
+            key={medicine.id}
+            medicine={medicine}
+            onLike={handleLike}
+            onAddToCart={handleAddToCart}
+            onBuy={handleBuy}
+          />
         ))}
       </div>
     </div>
