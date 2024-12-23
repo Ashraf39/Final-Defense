@@ -42,21 +42,33 @@ export const ImageUpload = ({ currentImage, onImageUpload }: ImageUploadProps) =
     }
 
     setIsUploading(true);
+    
     try {
-      const storageRef = ref(storage, `profile-images/${Date.now()}-${file.name}`);
+      // Create a unique filename using timestamp and original filename
+      const timestamp = Date.now();
+      const uniqueFilename = `${timestamp}-${file.name}`;
+      const storageRef = ref(storage, `profile-images/${uniqueFilename}`);
+      
+      // Upload the file
       const snapshot = await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(snapshot.ref);
-      onImageUpload(url);
+      console.log('Uploaded file snapshot:', snapshot);
+      
+      // Get the download URL
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      console.log('Download URL:', downloadURL);
+      
+      // Call the callback with the URL
+      onImageUpload(downloadURL);
       
       toast({
         title: "Image uploaded successfully",
         description: "Your profile picture has been updated",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image:", error);
       toast({
         title: "Upload failed",
-        description: "Failed to upload image. Please try again.",
+        description: error.message || "Failed to upload image. Please try again.",
         variant: "destructive",
       });
     } finally {
