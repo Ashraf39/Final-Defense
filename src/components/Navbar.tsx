@@ -12,6 +12,7 @@ export const Navbar = () => {
 
   useEffect(() => {
     if (user) {
+      // Cart items listener
       const cartQuery = query(
         collection(db, "cartItems"),
         where("userId", "==", user.uid)
@@ -24,15 +25,18 @@ export const Navbar = () => {
         setCartCount(totalQuantity);
       });
 
-      const fetchProfileImage = async () => {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          setProfileImage(userDoc.data().profileImage);
+      // Profile image listener
+      const userDocRef = doc(db, "users", user.uid);
+      const unsubscribeProfile = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+          setProfileImage(doc.data().profileImage);
         }
-      };
-      fetchProfileImage();
+      });
 
-      return () => unsubscribe();
+      return () => {
+        unsubscribe();
+        unsubscribeProfile();
+      };
     } else {
       setCartCount(0);
       setProfileImage(undefined);

@@ -25,7 +25,7 @@ export const UserMenu = ({ profileImage, userRole, onLogout }: UserMenuProps) =>
           className="hover:scale-110 transition-transform duration-200"
         >
           <Avatar className="h-8 w-8">
-            <AvatarImage src={profileImage} />
+            <AvatarImage src={profileImage} alt="Profile" />
             <AvatarFallback>
               <User className="h-4 w-4" />
             </AvatarFallback>

@@ -48,6 +48,7 @@ export const RegisterForm = () => {
         displayName,
         phoneNumber,
         address,
+        profileImage: "", // Initialize with empty string
         ...(role === "company" && {
           companyName,
           companyDescription,
