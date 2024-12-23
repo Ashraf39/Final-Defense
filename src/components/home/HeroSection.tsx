@@ -26,18 +26,6 @@ export const HeroSection = ({ searchQuery, setSearchQuery }: HeroSectionProps) =
           </p>
           
           <SearchSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-          
-          <div className="flex justify-center gap-4 mt-6">
-            <div className="animate-bounce-slow">
-              <Star className="h-6 w-6 text-yellow-300" />
-            </div>
-            <div className="animate-bounce-slow delay-100">
-              <Star className="h-6 w-6 text-yellow-300" />
-            </div>
-            <div className="animate-bounce-slow delay-200">
-              <Star className="h-6 w-6 text-yellow-300" />
-            </div>
-          </div>
         </div>
       </div>
     </section>
