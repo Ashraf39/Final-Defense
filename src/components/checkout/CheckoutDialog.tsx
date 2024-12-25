@@ -81,7 +81,10 @@ const CheckoutContent = () => {
       
       // Only clear the cart if we're checking out from the cart page
       if (isFromCartPage) {
+        console.log('Clearing cart - checkout from cart page');
         await clearCart();
+      } else {
+        console.log('Skipping cart clear - not from cart page');
       }
       
       setItems([]);
