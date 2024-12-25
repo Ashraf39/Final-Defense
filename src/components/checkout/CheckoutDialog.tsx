@@ -6,9 +6,11 @@ import { OrderSummary } from "./OrderSummary";
 import { CheckoutProvider, useCheckout } from "@/contexts/CheckoutContext";
 import { useOrderProcessing } from "@/hooks/useOrderProcessing";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface CheckoutDialogProps {
   isOpen: boolean;
@@ -18,6 +20,7 @@ interface CheckoutDialogProps {
 const CheckoutContent = () => {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const {
     items,
@@ -65,6 +68,26 @@ const CheckoutContent = () => {
     }
   }, [location.state, setItems]);
 
+  const clearCart = async () => {
+    if (!user) return;
+    
+    try {
+      const cartRef = collection(db, "cartItems");
+      const q = query(cartRef, where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+      
+      const deletePromises = querySnapshot.docs.map(document => 
+        deleteDoc(doc(db, "cartItems", document.id))
+      );
+      
+      await Promise.all(deletePromises);
+      console.log("Cart cleared successfully");
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async () => {
     if (!user) {
       toast({
@@ -95,10 +118,15 @@ const CheckoutContent = () => {
         false
       );
       
+      await clearCart();
+      setItems([]);
+      
       toast({
         title: "Success",
         description: "Order placed successfully",
       });
+      
+      navigate("/orders");
     } catch (error) {
       console.error('Error processing order:', error);
       toast({
