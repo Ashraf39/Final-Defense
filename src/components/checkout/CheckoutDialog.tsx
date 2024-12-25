@@ -76,7 +76,7 @@ const CheckoutContent = () => {
         mobileMethod,
         bankDetails,
         customerInfo,
-        false
+        !isFromCartPage // Pass whether this is a single item purchase
       );
       
       // Only clear the cart if we're checking out from the cart page

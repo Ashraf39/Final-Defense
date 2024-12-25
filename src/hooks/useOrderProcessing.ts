@@ -62,15 +62,6 @@ export const useOrderProcessing = (userId: string) => {
       // Process the order immediately to update stock
       await processOrder(orderRef.id);
 
-      if (!isSingleItem) {
-        const cartRef = collection(db, "cartItems");
-        const q = query(cartRef, where("userId", "==", userId));
-        const querySnapshot = await getDocs(q);
-        querySnapshot.docs.forEach(async (document) => {
-          await deleteDoc(doc(db, "cartItems", document.id));
-        });
-      }
-
       toast({
         title: "Order placed successfully",
         description: "You will be redirected to your orders",
@@ -84,6 +75,7 @@ export const useOrderProcessing = (userId: string) => {
         description: "Failed to place order",
         variant: "destructive",
       });
+      throw error; // Re-throw the error to be handled by the calling component
     } finally {
       setLoading(false);
     }
