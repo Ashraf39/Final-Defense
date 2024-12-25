@@ -5,6 +5,7 @@ import { db } from "@/lib/firebase";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { Order } from "@/types/order";
 
 export const OrderDetails = () => {
   const { id } = useParams();
@@ -16,10 +17,24 @@ export const OrderDetails = () => {
       if (!id) throw new Error('Order ID is required');
       const orderDoc = await getDoc(doc(db, "orders", id));
       if (!orderDoc.exists()) throw new Error('Order not found');
-      return {
+      
+      const data = orderDoc.data();
+      // Transform Firestore Timestamp to Date
+      const order: Order = {
         id: orderDoc.id,
-        ...orderDoc.data()
+        userId: data.userId,
+        items: data.items,
+        total: data.total,
+        status: data.status,
+        createdAt: data.createdAt.toDate(),
+        paymentMethod: data.paymentMethod,
+        mobileMethod: data.mobileMethod,
+        bankDetails: data.bankDetails,
+        customerInfo: data.customerInfo,
+        invoiceNumber: data.invoiceNumber
       };
+      
+      return order;
     }
   });
 
