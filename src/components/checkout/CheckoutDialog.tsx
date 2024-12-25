@@ -47,7 +47,7 @@ const CheckoutContent = () => {
   });
 
   // Check if we're coming from the cart page
-  const isFromCartPage = location.pathname === '/cart';
+  const isFromCartPage = location.state?.source === 'cart';
 
   const handleSubmit = async () => {
     if (!user) {

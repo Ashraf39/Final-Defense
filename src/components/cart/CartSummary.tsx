@@ -13,7 +13,8 @@ export const CartSummary = ({ total, items }: CartSummaryProps) => {
     navigate("/checkout", {
       state: {
         items,
-        total
+        total,
+        source: 'cart'
       }
     });
   };
