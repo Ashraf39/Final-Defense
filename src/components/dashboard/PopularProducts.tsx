@@ -27,7 +27,12 @@ export const PopularProducts = ({ products }: PopularProductsProps) => {
                     {product.sales || 0} units sold
                   </p>
                 </div>
-                <Button variant="outline" onClick={() => navigate(`/medicine/${product.id}`)}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => navigate(`/medicine/${product.id}`, { 
+                    state: { fromPopularProducts: true } 
+                  })}
+                >
                   View
                 </Button>
               </div>

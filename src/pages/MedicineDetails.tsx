@@ -1,21 +1,28 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart, ArrowLeft, CreditCard } from "lucide-react";
+import { Heart, ShoppingCart, ArrowLeft, CreditCard, Pencil, Trash } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Medicine } from "@/types/medicine";
 import { toggleLike, addToCart, isLiked } from "@/lib/medicines";
+import { EditMedicineDialog } from "@/components/inventory/EditMedicineDialog";
+import { DeleteMedicineDialog } from "@/components/inventory/DeleteMedicineDialog";
 
 export const MedicineDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [medicine, setMedicine] = useState<Medicine | null>(null);
   const [isLikedByUser, setIsLikedByUser] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const isFromPopularProducts = location.state?.fromPopularProducts;
 
   useEffect(() => {
     const fetchMedicine = async () => {
@@ -27,7 +34,7 @@ export const MedicineDetails = () => {
           const medicineData = { id: medicineDoc.id, ...medicineDoc.data() } as Medicine;
           setMedicine(medicineData);
 
-          if (user) {
+          if (user && !isFromPopularProducts) {
             const liked = await isLiked(user.uid, id);
             setIsLikedByUser(liked);
           }
@@ -50,7 +57,7 @@ export const MedicineDetails = () => {
     };
 
     fetchMedicine();
-  }, [id, user, toast, navigate]);
+  }, [id, user, toast, navigate, isFromPopularProducts]);
 
   const handleLike = async () => {
     if (!user || !medicine) {
@@ -112,6 +119,23 @@ export const MedicineDetails = () => {
     });
   };
 
+  const handleMedicineUpdated = (updatedMedicine: Medicine) => {
+    setMedicine(updatedMedicine);
+    setIsEditDialogOpen(false);
+    toast({
+      title: "Success",
+      description: "Medicine updated successfully",
+    });
+  };
+
+  const handleMedicineDeleted = () => {
+    toast({
+      title: "Success",
+      description: "Medicine deleted successfully",
+    });
+    navigate(-1);
+  };
+
   if (!medicine) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -157,33 +181,73 @@ export const MedicineDetails = () => {
           </div>
 
           <div className="flex gap-4">
-            <Button
-              variant="outline"
-              size="lg"
-              className={isLikedByUser ? "text-red-500" : ""}
-              onClick={handleLike}
-            >
-              <Heart className={`h-5 w-5 mr-2 ${isLikedByUser ? "fill-current" : ""}`} />
-              {isLikedByUser ? "Liked" : "Like"}
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={handleAddToCart}
-            >
-              <ShoppingCart className="h-5 w-5 mr-2" />
-              Add to Cart
-            </Button>
-            <Button
-              size="lg"
-              onClick={handleBuy}
-            >
-              <CreditCard className="h-5 w-5 mr-2" />
-              Buy Now
-            </Button>
+            {isFromPopularProducts ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setIsEditDialogOpen(true)}
+                >
+                  <Pencil className="h-5 w-5 mr-2" />
+                  Edit
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="lg"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                >
+                  <Trash className="h-5 w-5 mr-2" />
+                  Delete
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className={isLikedByUser ? "text-red-500" : ""}
+                  onClick={handleLike}
+                >
+                  <Heart className={`h-5 w-5 mr-2 ${isLikedByUser ? "fill-current" : ""}`} />
+                  {isLikedByUser ? "Liked" : "Like"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={handleAddToCart}
+                >
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  Add to Cart
+                </Button>
+                <Button
+                  size="lg"
+                  onClick={handleBuy}
+                >
+                  <CreditCard className="h-5 w-5 mr-2" />
+                  Buy Now
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
+
+      {medicine && (
+        <>
+          <EditMedicineDialog
+            open={isEditDialogOpen}
+            onOpenChange={setIsEditDialogOpen}
+            medicine={medicine}
+            onMedicineUpdated={handleMedicineUpdated}
+          />
+          <DeleteMedicineDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            medicine={medicine}
+            onMedicineDeleted={handleMedicineDeleted}
+          />
+        </>
+      )}
     </div>
   );
 };
