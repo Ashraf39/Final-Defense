@@ -66,20 +66,20 @@ export const UserManagement = ({ onClose }: UserManagementProps) => {
 
   return (
     <Dialog open onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-4xl bg-gradient-to-b from-white to-gray-50">
-        <DialogHeader className="space-y-4 pb-6 border-b">
+      <DialogContent className="max-w-4xl max-h-[90vh] bg-gradient-to-b from-white to-gray-50">
+        <DialogHeader className="space-y-2 pb-4 border-b">
           <div className="flex items-center space-x-3">
             <div className="p-2 bg-primary/10 rounded-full">
               <User className="h-6 w-6 text-primary" />
             </div>
-            <DialogTitle className="text-2xl font-semibold text-gray-900">Manage Users</DialogTitle>
+            <DialogTitle className="text-xl font-semibold text-gray-900">Manage Users</DialogTitle>
           </div>
           <p className="text-sm text-gray-500">
             Manage user roles and permissions across the platform
           </p>
         </DialogHeader>
         
-        <div className="max-h-[600px] overflow-y-auto px-1">
+        <div className="max-h-[calc(90vh-12rem)] overflow-y-auto px-1">
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
