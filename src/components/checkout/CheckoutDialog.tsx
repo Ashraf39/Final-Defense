@@ -38,8 +38,11 @@ const CheckoutContent = () => {
   useEffect(() => {
     const state = location.state;
     if (state?.singleItem) {
-      console.log('Setting single item:', state.singleItem); // Debug log
+      console.log('Setting single item:', state.singleItem);
       setItems([state.singleItem]);
+    } else if (state?.items) {
+      console.log('Setting multiple items:', state.items);
+      setItems(state.items);
     }
   }, [location.state, setItems]);
 

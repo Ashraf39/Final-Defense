@@ -60,14 +60,21 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const calculateTotal = (currentItems: OrderItem[]) => {
-    return currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    console.log('Calculating total for items:', currentItems);
+    const calculatedTotal = currentItems.reduce((sum, item) => {
+      const itemTotal = item.price * item.quantity;
+      console.log(`Item ${item.name}: ${item.price} * ${item.quantity} = ${itemTotal}`);
+      return sum + itemTotal;
+    }, 0);
+    console.log('Final calculated total:', calculatedTotal);
+    return calculatedTotal;
   };
 
   const handleSetItems = (newItems: OrderItem[]) => {
-    console.log('Setting new items:', newItems); // Debug log
+    console.log('Setting new items:', newItems);
     setItems(newItems);
     const newTotal = calculateTotal(newItems);
-    console.log('Calculated new total:', newTotal); // Debug log
+    console.log('Setting new total:', newTotal);
     setTotal(newTotal);
   };
 
@@ -76,16 +83,16 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
       item.medicineId === medicineId ? { ...item, quantity } : item
     );
     setItems(updatedItems);
-    const newTotal = calculateTotal(updatedItems);
-    setTotal(newTotal);
   };
 
   // Recalculate total whenever items change
   useEffect(() => {
-    console.log('Items changed:', items); // Debug log
-    const newTotal = calculateTotal(items);
-    console.log('New total calculated:', newTotal); // Debug log
-    setTotal(newTotal);
+    if (items.length > 0) {
+      console.log('Items changed, recalculating total:', items);
+      const newTotal = calculateTotal(items);
+      console.log('New total calculated:', newTotal);
+      setTotal(newTotal);
+    }
   }, [items]);
 
   return (
