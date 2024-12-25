@@ -3,6 +3,10 @@ import { OrderCard } from "@/components/orders/OrderCard";
 import { useOrderDetails } from "@/hooks/useOrderDetails";
 import { OrderLoadingState } from "@/components/orders/OrderLoadingState";
 import { OrderErrorState } from "@/components/orders/OrderErrorState";
+import { useEffect, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface OrderDetailsDialogProps {
   invoiceNumber: string | null;
@@ -11,7 +15,29 @@ interface OrderDetailsDialogProps {
 }
 
 export const OrderDetailsDialog = ({ invoiceNumber, isOpen, onClose }: OrderDetailsDialogProps) => {
-  const { data: order, isLoading } = useOrderDetails(invoiceNumber || undefined);
+  const { data: order, isLoading, error } = useOrderDetails(invoiceNumber || undefined);
+  const [companyMedicineIds, setCompanyMedicineIds] = useState<string[]>([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchCompanyMedicines = async () => {
+      if (!user?.uid) return;
+      
+      try {
+        const medicinesQuery = query(
+          collection(db, "medicines"),
+          where("companyId", "==", user.uid)
+        );
+        const medicinesSnapshot = await getDocs(medicinesQuery);
+        const medicineIds = medicinesSnapshot.docs.map(doc => doc.id);
+        setCompanyMedicineIds(medicineIds);
+      } catch (error) {
+        console.error("Error fetching company medicines:", error);
+      }
+    };
+
+    fetchCompanyMedicines();
+  }, [user?.uid]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -22,10 +48,16 @@ export const OrderDetailsDialog = ({ invoiceNumber, isOpen, onClose }: OrderDeta
         <div className="mt-4">
           {isLoading ? (
             <OrderLoadingState />
-          ) : !order ? (
+          ) : error ? (
             <OrderErrorState />
+          ) : order ? (
+            <OrderCard 
+              order={order} 
+              isCompany={true}
+              companyMedicineIds={companyMedicineIds}
+            />
           ) : (
-            <OrderCard order={order} isCompany={true} />
+            <OrderErrorState />
           )}
         </div>
       </DialogContent>
