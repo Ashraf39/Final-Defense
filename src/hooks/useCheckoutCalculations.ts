@@ -10,11 +10,11 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
     }
 
     return items.reduce((sum, item) => {
-      const price = Number(item.price);
-      const quantity = Number(item.quantity);
+      const price = parseFloat(item.price.toString());
+      const quantity = parseInt(item.quantity.toString());
       
       if (isNaN(price) || isNaN(quantity)) {
-        console.warn('Invalid price or quantity for item:', item);
+        console.warn('Invalid price or quantity:', { price: item.price, quantity: item.quantity });
         return sum;
       }
 
@@ -28,7 +28,7 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
     setItems(prevItems => 
       prevItems.map(item =>
         item.medicineId === medicineId 
-          ? { ...item, quantity: Number(newQuantity) }
+          ? { ...item, quantity: parseInt(newQuantity.toString()) }
           : item
       )
     );

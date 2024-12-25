@@ -29,8 +29,12 @@ export const OrderSummary = ({
 }: OrderSummaryProps) => {
   // Calculate total directly in the component to ensure accuracy
   const calculatedTotal = items.reduce((sum, item) => {
-    const itemPrice = Number(item.price);
-    const itemQuantity = Number(item.quantity);
+    const itemPrice = parseFloat(item.price.toString());
+    const itemQuantity = parseInt(item.quantity.toString());
+    if (isNaN(itemPrice) || isNaN(itemQuantity)) {
+      console.warn('Invalid price or quantity:', { price: item.price, quantity: item.quantity });
+      return sum;
+    }
     return sum + (itemPrice * itemQuantity);
   }, 0);
 
