@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Medicine } from "@/types/dashboard";
+import { Medicine } from "@/types/medicine";
 import { useState } from "react";
 import { MedicineDetailsDialog } from "./MedicineDetailsDialog";
 
@@ -12,7 +12,14 @@ export const PopularProducts = ({ products }: PopularProductsProps) => {
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
 
   const handleViewMedicine = (medicine: Medicine) => {
-    setSelectedMedicine(medicine);
+    // Add missing properties if they don't exist
+    const completeProduct: Medicine = {
+      ...medicine,
+      image: medicine.image || "/placeholder.svg",
+      createdAt: medicine.createdAt || new Date(),
+      updatedAt: medicine.updatedAt || new Date(),
+    };
+    setSelectedMedicine(completeProduct);
   };
 
   const handleCloseDialog = () => {
