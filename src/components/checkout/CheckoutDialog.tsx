@@ -42,16 +42,17 @@ const CheckoutContent = () => {
         medicineId: state.singleItem.medicineId,
         name: state.singleItem.name,
         quantity: state.singleItem.quantity || 1,
-        price: state.singleItem.price
+        price: parseFloat(state.singleItem.price)
       }];
+      console.log('Processed single item:', initialItems);
       setItems(initialItems);
     } else if (state?.items && Array.isArray(state.items)) {
       console.log('Setting multiple items from cart:', state.items);
       const cartItems = state.items.map((item: any) => ({
         medicineId: item.medicineId,
         name: item.name,
-        quantity: item.quantity || 1,
-        price: item.price
+        quantity: parseInt(item.quantity) || 1,
+        price: parseFloat(item.price)
       }));
       console.log('Processed cart items:', cartItems);
       setItems(cartItems);

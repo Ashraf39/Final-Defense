@@ -17,7 +17,7 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
         console.warn('Invalid item data:', item);
         return sum;
       }
-      const itemTotal = item.price * item.quantity;
+      const itemTotal = parseFloat(item.price.toString()) * parseInt(item.quantity.toString());
       console.log(`Item ${item.name}: ${item.price} * ${item.quantity} = ${itemTotal}`);
       return sum + itemTotal;
     }, 0);
@@ -30,7 +30,7 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
     console.log(`Updating quantity for medicine ${medicineId} to ${quantity}`);
     setItems(prevItems => {
       const updatedItems = prevItems.map(item =>
-        item.medicineId === medicineId ? { ...item, quantity } : item
+        item.medicineId === medicineId ? { ...item, quantity: parseInt(quantity.toString()) } : item
       );
       console.log('Updated items after quantity change:', updatedItems);
       return updatedItems;
