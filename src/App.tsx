@@ -14,7 +14,6 @@ import { CompanyMedicines } from "@/pages/CompanyMedicines";
 import { Cart } from "@/pages/Cart";
 import { Orders } from "@/pages/Orders";
 import { OrderDetails } from "@/pages/OrderDetails";
-import { CompanyOrderDetails } from "@/pages/CompanyOrderDetails";
 import { Checkout } from "@/pages/Checkout";
 import { Inventory } from "@/pages/Inventory";
 import { useAuth } from "@/contexts/AuthContext";
@@ -59,7 +58,6 @@ const AppRoutes = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/dashboard" element={<CompanyDashboard />} />
-      <Route path="/dashboard/orders/:id" element={<CompanyOrderDetails />} />
       <Route 
         path="/admin" 
         element={
@@ -101,5 +99,3 @@ const App = () => {
     </QueryClientProvider>
   );
 };
-
-export default App;
