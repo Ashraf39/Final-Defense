@@ -5,9 +5,11 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Medicine } from "@/types/medicine";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { AddMedicineDialog } from "@/components/inventory/AddMedicineDialog";
+import { EditMedicineDialog } from "@/components/inventory/EditMedicineDialog";
+import { DeleteMedicineDialog } from "@/components/inventory/DeleteMedicineDialog";
 import {
   Table,
   TableBody,
@@ -24,6 +26,9 @@ export const Inventory = () => {
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
 
   useEffect(() => {
     if (!user || userRole !== "company") {
@@ -56,6 +61,16 @@ export const Inventory = () => {
     fetchMedicines();
   }, [user, userRole, navigate, toast]);
 
+  const handleEdit = (medicine: Medicine) => {
+    setSelectedMedicine(medicine);
+    setShowEditDialog(true);
+  };
+
+  const handleDelete = (medicine: Medicine) => {
+    setSelectedMedicine(medicine);
+    setShowDeleteDialog(true);
+  };
+
   const handleMedicineAdded = (newMedicine: Medicine) => {
     setMedicines((prev) => [...prev, newMedicine]);
     setShowAddDialog(false);
@@ -65,8 +80,34 @@ export const Inventory = () => {
     });
   };
 
+  const handleMedicineUpdated = (updatedMedicine: Medicine) => {
+    setMedicines((prev) =>
+      prev.map((medicine) =>
+        medicine.id === updatedMedicine.id ? updatedMedicine : medicine
+      )
+    );
+    setShowEditDialog(false);
+    toast({
+      title: "Success",
+      description: "Medicine updated successfully",
+    });
+  };
+
+  const handleMedicineDeleted = (medicineId: string) => {
+    setMedicines((prev) => prev.filter((medicine) => medicine.id !== medicineId));
+    setShowDeleteDialog(false);
+    toast({
+      title: "Success",
+      description: "Medicine deleted successfully",
+    });
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -100,11 +141,20 @@ export const Inventory = () => {
                 <TableCell>{medicine.stock}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    <Button variant="ghost" size="sm">
-                      Edit
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(medicine)}
+                    >
+                      <Pencil className="h-4 w-4 mr-1" /> Edit
                     </Button>
-                    <Button variant="ghost" size="sm">
-                      Delete
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(medicine)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" /> Delete
                     </Button>
                   </div>
                 </TableCell>
@@ -114,12 +164,32 @@ export const Inventory = () => {
         </Table>
       </div>
 
-      <AddMedicineDialog
-        open={showAddDialog}
-        onOpenChange={setShowAddDialog}
-        onMedicineAdded={handleMedicineAdded}
-        userId={user?.uid || ""}
-      />
+      {showAddDialog && (
+        <AddMedicineDialog
+          open={showAddDialog}
+          onOpenChange={setShowAddDialog}
+          onMedicineAdded={handleMedicineAdded}
+          userId={user?.uid || ""}
+        />
+      )}
+
+      {showEditDialog && selectedMedicine && (
+        <EditMedicineDialog
+          open={showEditDialog}
+          onOpenChange={setShowEditDialog}
+          medicine={selectedMedicine}
+          onMedicineUpdated={handleMedicineUpdated}
+        />
+      )}
+
+      {showDeleteDialog && selectedMedicine && (
+        <DeleteMedicineDialog
+          open={showDeleteDialog}
+          onOpenChange={setShowDeleteDialog}
+          medicine={selectedMedicine}
+          onMedicineDeleted={handleMedicineDeleted}
+        />
+      )}
     </div>
   );
 };
