@@ -20,6 +20,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { UserData } from "@/types/user";
+import { User } from "lucide-react";
 
 interface UserManagementProps {
   onClose: () => void;
@@ -65,33 +66,48 @@ export const UserManagement = ({ onClose }: UserManagementProps) => {
 
   return (
     <Dialog open onOpenChange={() => onClose()}>
-      <DialogContent className="max-w-4xl">
-        <DialogHeader>
-          <DialogTitle>Manage Users</DialogTitle>
+      <DialogContent className="max-w-4xl bg-gradient-to-b from-white to-gray-50">
+        <DialogHeader className="space-y-4 pb-6 border-b">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-primary/10 rounded-full">
+              <User className="h-6 w-6 text-primary" />
+            </div>
+            <DialogTitle className="text-2xl font-semibold text-gray-900">Manage Users</DialogTitle>
+          </div>
+          <p className="text-sm text-gray-500">
+            Manage user roles and permissions across the platform
+          </p>
         </DialogHeader>
         
-        <div className="max-h-[600px] overflow-y-auto">
+        <div className="max-h-[600px] overflow-y-auto px-1">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Current Role</TableHead>
-                <TableHead>Actions</TableHead>
+              <TableRow className="bg-gray-50">
+                <TableHead className="font-semibold text-gray-700">Name</TableHead>
+                <TableHead className="font-semibold text-gray-700">Email</TableHead>
+                <TableHead className="font-semibold text-gray-700">Current Role</TableHead>
+                <TableHead className="font-semibold text-gray-700">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users?.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.displayName || "N/A"}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
+                <TableRow key={user.id} className="hover:bg-gray-50/50 transition-colors">
+                  <TableCell className="font-medium">{user.displayName || "N/A"}</TableCell>
+                  <TableCell className="text-gray-600">{user.email}</TableCell>
+                  <TableCell>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                      ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 
+                        user.role === 'company' ? 'bg-blue-100 text-blue-800' : 
+                        'bg-gray-100 text-gray-800'}`}>
+                      {user.role}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <Select
                       value={user.role}
                       onValueChange={(value) => handleRoleChange(user.id, value)}
                     >
-                      <SelectTrigger className="w-32">
+                      <SelectTrigger className="w-32 h-8 text-sm">
                         <SelectValue placeholder="Select role" />
                       </SelectTrigger>
                       <SelectContent>
