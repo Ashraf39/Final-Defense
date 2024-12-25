@@ -6,6 +6,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { CartItem } from "@/components/cart/CartItem";
 import { CartSummary } from "@/components/cart/CartSummary";
 import { EmptyCart } from "@/components/cart/EmptyCart";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface CartItemType {
   id: string;
@@ -21,6 +23,7 @@ export const Cart = () => {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const fetchCartItems = async () => {
     if (!user) return;
