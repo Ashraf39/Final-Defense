@@ -11,7 +11,7 @@ export const RecentOrders = ({ orders }: RecentOrdersProps) => {
   const navigate = useNavigate();
 
   const handleViewOrder = (orderId: string) => {
-    navigate(`/orders/${orderId}`);
+    navigate(`/dashboard/orders/${orderId}`);
   };
 
   return (
