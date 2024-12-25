@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingBag, ShoppingCart } from "lucide-react";
 import { Medicine } from "@/types/medicine";
+import { useState, useEffect } from "react";
+import { isLiked } from "@/lib/medicines";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface MedicineCardProps {
   medicine: Medicine;
@@ -15,11 +18,30 @@ export const MedicineCard = ({
   onAddToCart, 
   onBuy 
 }: MedicineCardProps) => {
+  const { user } = useAuth();
+  const [isLikedByUser, setIsLikedByUser] = useState(false);
+
+  useEffect(() => {
+    const checkIfLiked = async () => {
+      if (user) {
+        const liked = await isLiked(user.uid, medicine.id);
+        setIsLikedByUser(liked);
+      }
+    };
+    
+    checkIfLiked();
+  }, [user, medicine.id]);
+
   const getImageUrl = (imageUrl: string | undefined) => {
     if (!imageUrl || imageUrl === "") return "/placeholder.svg";
     if (imageUrl.startsWith("http")) return imageUrl;
     if (imageUrl.startsWith("/")) return imageUrl;
     return `/placeholder.svg`;
+  };
+
+  const handleLike = async () => {
+    await onLike(medicine.id);
+    setIsLikedByUser(!isLikedByUser);
   };
 
   return (
@@ -43,9 +65,11 @@ export const MedicineCard = ({
               variant="ghost"
               size="icon"
               className="h-6 w-6"
-              onClick={() => onLike(medicine.id)}
+              onClick={handleLike}
             >
-              <Heart className="h-3 w-3 fill-current" />
+              <Heart 
+                className={`h-3 w-3 ${isLikedByUser ? 'fill-red-500 text-red-500' : ''}`} 
+              />
             </Button>
             <Button
               variant="ghost"
@@ -60,6 +84,7 @@ export const MedicineCard = ({
               className="bg-green-600 hover:bg-green-700 text-xs px-2 py-1 h-6"
               onClick={() => onBuy(medicine)}
             >
+              <ShoppingBag className="h-3 w-3 mr-1" />
               Buy
             </Button>
           </div>
