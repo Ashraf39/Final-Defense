@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, AuthError } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
@@ -9,14 +9,21 @@ import { useNavigate } from "react-router-dom";
 
 interface LoginFormProps {
   onSuccess?: () => void;
+  defaultEmail?: string;
 }
 
-export const LoginForm = ({ onSuccess }: LoginFormProps) => {
+export const LoginForm = ({ onSuccess, defaultEmail }: LoginFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(defaultEmail || "");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (defaultEmail) {
+      setEmail(defaultEmail);
+    }
+  }, [defaultEmail]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

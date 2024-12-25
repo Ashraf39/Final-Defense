@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
+import { useState } from "react";
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -11,6 +12,14 @@ interface AuthDialogProps {
 }
 
 export const AuthDialog = ({ isOpen, onClose, defaultTab = "login" }: AuthDialogProps) => {
+  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [registeredEmail, setRegisteredEmail] = useState("");
+
+  const handleRegistrationComplete = (email: string) => {
+    setRegisteredEmail(email);
+    setActiveTab("login");
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh]">
@@ -20,7 +29,7 @@ export const AuthDialog = ({ isOpen, onClose, defaultTab = "login" }: AuthDialog
           </DialogTitle>
         </DialogHeader>
         
-        <Tabs defaultValue={defaultTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="register">Register</TabsTrigger>
@@ -28,11 +37,14 @@ export const AuthDialog = ({ isOpen, onClose, defaultTab = "login" }: AuthDialog
           
           <ScrollArea className="h-[60vh]">
             <TabsContent value="login" className="mt-4">
-              <LoginForm onSuccess={onClose} />
+              <LoginForm onSuccess={onClose} defaultEmail={registeredEmail} />
             </TabsContent>
             
             <TabsContent value="register" className="mt-4">
-              <RegisterForm onSuccess={onClose} />
+              <RegisterForm 
+                onSuccess={() => {}} 
+                onRegistrationComplete={handleRegistrationComplete}
+              />
             </TabsContent>
           </ScrollArea>
         </Tabs>

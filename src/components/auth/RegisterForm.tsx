@@ -11,12 +11,18 @@ import type { UserData } from "@/types/user";
 
 interface RegisterFormProps {
   onSuccess?: () => void;
+  onRegistrationComplete?: (email: string) => void;
 }
 
-export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
+export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterFormProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [role, setRole] = useState<"regular" | "company">("regular");
+
+  const validatePhoneNumber = (phone: string) => {
+    const phoneRegex = /^\d{11}$/;
+    return phoneRegex.test(phone);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,6 +37,16 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
     const companyName = role === "company" ? formData.get("companyName") as string : undefined;
     const companyDescription = role === "company" ? formData.get("companyDescription") as string : undefined;
     const companyLicense = role === "company" ? formData.get("companyLicense") as string : undefined;
+
+    if (!validatePhoneNumber(phoneNumber)) {
+      toast({
+        title: "Invalid phone number",
+        description: "Phone number must be exactly 11 digits",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     if (password.length < 6) {
       toast({
@@ -66,9 +82,17 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
 
       toast({
         title: "Registration successful",
-        description: "Your account has been created.",
+        description: "Please login with your credentials.",
       });
 
+      // Sign out the user after registration
+      await auth.signOut();
+      
+      // Notify parent component to switch to login tab with the registered email
+      if (onRegistrationComplete) {
+        onRegistrationComplete(email);
+      }
+      
       onSuccess?.();
     } catch (error: any) {
       toast({
