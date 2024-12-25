@@ -46,6 +46,9 @@ const CheckoutContent = () => {
     items
   });
 
+  // Check if we're coming from the cart page
+  const isFromCartPage = location.pathname === '/cart';
+
   const handleSubmit = async () => {
     if (!user) {
       toast({
@@ -76,7 +79,11 @@ const CheckoutContent = () => {
         false
       );
       
-      await clearCart();
+      // Only clear the cart if we're checking out from the cart page
+      if (isFromCartPage) {
+        await clearCart();
+      }
+      
       setItems([]);
       
       toast({
