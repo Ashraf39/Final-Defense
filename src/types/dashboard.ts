@@ -1,3 +1,5 @@
+import { Medicine as BaseMedicine } from './medicine';
+
 export interface DashboardData {
   totalProducts: number;
   monthlySales: number;
@@ -5,14 +7,8 @@ export interface DashboardData {
   pendingOrders: number;
 }
 
-export interface Medicine {
-  id: string;
-  name: string;
+export interface Medicine extends BaseMedicine {
   sales?: number;
-  companyId: string;
-  price: number;
-  description: string;
-  stock: number;
 }
 
 // Using the complete Order type from order.ts

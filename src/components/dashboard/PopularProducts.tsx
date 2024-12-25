@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Medicine } from "@/types/medicine";
+import { Medicine } from "@/types/dashboard";
 import { useState } from "react";
 import { MedicineDetailsDialog } from "./MedicineDetailsDialog";
 

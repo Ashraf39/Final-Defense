@@ -8,6 +8,7 @@ import { PopularProducts } from "@/components/dashboard/PopularProducts";
 import { RecentOrdersSection } from "@/components/dashboard/RecentOrdersSection";
 import { useState } from "react";
 import { useDashboardData } from "@/hooks/useDashboardData";
+import { Medicine } from "@/types/dashboard";
 
 export const CompanyDashboard = () => {
   const { user, userRole } = useAuth();
@@ -79,7 +80,7 @@ export const CompanyDashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <RecentOrdersSection orders={recentOrders} />
-        <PopularProducts products={popularProducts} />
+        <PopularProducts products={popularProducts as Medicine[]} />
       </div>
     </div>
   );
