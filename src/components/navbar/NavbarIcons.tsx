@@ -36,7 +36,7 @@ const NavbarIcon = ({ to, icon, tooltip }: NavbarIconProps) => {
 export const HomeIcon = () => (
   <NavbarIcon
     to="/"
-    icon={<Home height="6" width="6" strokeWidth="1" stroke="black" />}
+    icon={<Home className="h-6 w-6" strokeWidth={1} stroke="black" />}
     tooltip="Home"
   />
 );
@@ -46,7 +46,7 @@ export const CartIcon = ({ count = 0 }) => (
     to="/cart"
     icon={
       <div className="relative">
-        <ShoppingCart height="6" width="6" strokeWidth="1" stroke="black" />
+        <ShoppingCart className="h-6 w-6" strokeWidth={1} stroke="black" />
         {count > 0 && (
           <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-scale-in">
             {count}
@@ -61,7 +61,7 @@ export const CartIcon = ({ count = 0 }) => (
 export const OrdersIcon = () => (
   <NavbarIcon
     to="/orders"
-    icon={<Package height="6" width="6" strokeWidth="1" stroke="black" />}
+    icon={<Package className="h-6 w-6" strokeWidth={1} stroke="black" />}
     tooltip="Orders"
   />
 );
@@ -69,7 +69,7 @@ export const OrdersIcon = () => (
 export const DashboardIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<User height="6" width="6" strokeWidth="1" stroke="black" />}
+    icon={<User className="h-6 w-6" strokeWidth={1} stroke="black" />}
     tooltip="Dashboard"
   />
 );
@@ -77,7 +77,7 @@ export const DashboardIcon = () => (
 export const InventoryIcon = () => (
   <NavbarIcon
     to="/inventory"
-    icon={<Package height="6" width="6" strokeWidth="1" stroke="black" />}
+    icon={<Package className="h-6 w-6" strokeWidth={1} stroke="black" />}
     tooltip="Inventory"
   />
 );
@@ -85,7 +85,7 @@ export const InventoryIcon = () => (
 export const CompanyIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<User height="6" width="6" strokeWidth="1" stroke="black" />}
+    icon={<User className="h-6 w-6" strokeWidth={1} stroke="black" />}
     tooltip="Company Dashboard"
   />
 );
