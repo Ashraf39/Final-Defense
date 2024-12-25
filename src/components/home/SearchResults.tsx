@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
 import { Medicine } from "@/types/medicine";
 import { UserData } from "@/types/user";
 import { useState } from "react";
 import { CompanyMedicinesDialog } from "./CompanyMedicinesDialog";
+import { MedicineDetailsDialog } from "../dashboard/MedicineDetailsDialog";
 
 interface SearchResultsProps {
   medicines: Medicine[];
@@ -12,6 +12,7 @@ interface SearchResultsProps {
 
 export const SearchResults = ({ medicines, companies, isLoading }: SearchResultsProps) => {
   const [selectedCompany, setSelectedCompany] = useState<UserData | null>(null);
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
 
   const getImageUrl = (imageUrl: string | undefined) => {
     if (!imageUrl || imageUrl === "") return "/placeholder.svg";
@@ -75,10 +76,10 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
             <h3 className="text-lg font-semibold mb-3">Medicines</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {medicines.map((medicine) => (
-                <Link
+                <button
                   key={medicine.id}
-                  to={`/medicine/${medicine.id}`}
-                  className="p-4 border border-green-100 rounded-lg hover:shadow-md transition-shadow bg-white"
+                  onClick={() => setSelectedMedicine(medicine)}
+                  className="p-4 border border-green-100 rounded-lg hover:shadow-md transition-shadow bg-white text-left w-full"
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -95,7 +96,7 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
                       <p className="text-sm text-gray-500">BDT {medicine.price}</p>
                     </div>
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
           </div>
@@ -106,6 +107,12 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
         companyId={selectedCompany?.uid || null}
         companyName={selectedCompany?.companyName || ""}
         onOpenChange={(open) => !open && setSelectedCompany(null)}
+      />
+
+      <MedicineDetailsDialog
+        medicine={selectedMedicine}
+        isOpen={!!selectedMedicine}
+        onClose={() => setSelectedMedicine(null)}
       />
     </>
   );
