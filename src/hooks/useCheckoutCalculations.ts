@@ -7,11 +7,13 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
 
   const calculateTotal = (items: OrderItem[]) => {
     console.log('Calculating total for items:', items);
-    return items.reduce((sum, item) => {
+    const calculatedTotal = items.reduce((sum, item) => {
       const itemTotal = item.price * item.quantity;
       console.log(`Item ${item.name}: ${item.price} * ${item.quantity} = ${itemTotal}`);
       return sum + itemTotal;
     }, 0);
+    console.log('Final calculated total:', calculatedTotal);
+    return calculatedTotal;
   };
 
   const updateItemQuantity = (medicineId: string, quantity: number) => {
@@ -27,9 +29,12 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
 
   // Recalculate total whenever items change
   useEffect(() => {
-    const newTotal = calculateTotal(items);
-    console.log('Setting new total:', newTotal);
-    setTotal(newTotal);
+    if (items.length > 0) {
+      console.log('Items changed, recalculating total:', items);
+      const newTotal = calculateTotal(items);
+      console.log('Setting new total:', newTotal);
+      setTotal(newTotal);
+    }
   }, [items]);
 
   return {
