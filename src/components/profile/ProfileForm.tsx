@@ -3,12 +3,12 @@ import { doc, updateDoc } from "firebase/firestore";
 import { updateEmail, updatePassword } from "firebase/auth";
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { User, Mail, Phone, MapPin, Lock } from "lucide-react";
-import { ImageUpload } from "./ImageUpload";
+import { User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { ProfileImageSection } from "./ProfileImageSection";
+import { ContactSection } from "./ContactSection";
+import { SecuritySection } from "./SecuritySection";
 
 interface ProfileFormProps {
   initialData: {
@@ -34,18 +34,10 @@ export const ProfileForm = ({ initialData }: ProfileFormProps) => {
     confirmPassword: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (name: string, value: string) => {
     setUserData((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  const handleImageUpload = (url: string) => {
-    setUserData((prev) => ({
-      ...prev,
-      profileImage: url,
     }));
   };
 
@@ -103,103 +95,39 @@ export const ProfileForm = ({ initialData }: ProfileFormProps) => {
   };
 
   return (
-    <form onSubmit={handleUpdateProfile} className="space-y-6">
-      <ImageUpload 
-        currentImage={userData.profileImage} 
-        onImageUpload={handleImageUpload} 
+    <form onSubmit={handleUpdateProfile} className="space-y-8">
+      <ProfileImageSection 
+        profileImage={userData.profileImage}
+        onChange={(value) => handleInputChange("profileImage", value)}
       />
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="displayName" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            Full Name
-          </Label>
-          <Input
-            id="displayName"
-            name="displayName"
-            placeholder="Enter your name"
-            value={userData.displayName}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="email" className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            Email Address
-          </Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Enter your email"
-            value={userData.email}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="phoneNumber" className="flex items-center gap-2">
-            <Phone className="h-4 w-4" />
-            Phone Number
-          </Label>
-          <Input
-            id="phoneNumber"
-            name="phoneNumber"
-            type="tel"
-            placeholder="Enter your phone number"
-            value={userData.phoneNumber}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="address" className="flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            Address
-          </Label>
-          <Input
-            id="address"
-            name="address"
-            placeholder="Enter your address"
-            value={userData.address}
-            onChange={handleInputChange}
-          />
-        </div>
+      <div className="space-y-2">
+        <label htmlFor="displayName" className="flex items-center gap-2">
+          <User className="h-4 w-4" />
+          Full Name
+        </label>
+        <input
+          id="displayName"
+          name="displayName"
+          className="w-full p-2 border rounded"
+          placeholder="Enter your name"
+          value={userData.displayName}
+          onChange={(e) => handleInputChange("displayName", e.target.value)}
+        />
       </div>
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="newPassword" className="flex items-center gap-2">
-            <Lock className="h-4 w-4" />
-            New Password
-          </Label>
-          <Input
-            id="newPassword"
-            name="newPassword"
-            type="password"
-            placeholder="Enter new password"
-            value={userData.newPassword}
-            onChange={handleInputChange}
-          />
-        </div>
+      <ContactSection
+        email={userData.email}
+        phoneNumber={userData.phoneNumber}
+        address={userData.address}
+        onChange={handleInputChange}
+      />
 
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword" className="flex items-center gap-2">
-            <Lock className="h-4 w-4" />
-            Confirm New Password
-          </Label>
-          <Input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm new password"
-            value={userData.confirmPassword}
-            onChange={handleInputChange}
-          />
-        </div>
-      </div>
+      <SecuritySection
+        newPassword={userData.newPassword}
+        confirmPassword={userData.confirmPassword}
+        onChange={handleInputChange}
+      />
 
       <Button 
         type="submit" 
