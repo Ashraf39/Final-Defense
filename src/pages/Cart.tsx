@@ -88,6 +88,20 @@ export const Cart = () => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  const handleCheckout = () => {
+    navigate("/checkout", {
+      state: {
+        items: cartItems.map(item => ({
+          medicineId: item.medicineId,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        total: calculateTotal() // Pass the total explicitly
+      }
+    });
+  };
+
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -182,7 +196,7 @@ export const Cart = () => {
               <Button variant="outline" onClick={() => navigate("/")}>
                 Continue Shopping
               </Button>
-              <Button onClick={() => navigate("/checkout")}>
+              <Button onClick={handleCheckout}>
                 Proceed to Checkout
               </Button>
             </div>
