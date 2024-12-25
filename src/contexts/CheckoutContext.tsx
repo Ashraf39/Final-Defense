@@ -59,17 +59,23 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
     email: "",
   });
 
+  const calculateTotal = (currentItems: OrderItem[]) => {
+    const newTotal = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    setTotal(newTotal);
+  };
+
+  // Initialize total when items are first set
+  const handleSetItems = (newItems: OrderItem[]) => {
+    setItems(newItems);
+    calculateTotal(newItems);
+  };
+
   const updateItemQuantity = (medicineId: string, quantity: number) => {
     const updatedItems = items.map(item =>
       item.medicineId === medicineId ? { ...item, quantity } : item
     );
     setItems(updatedItems);
     calculateTotal(updatedItems);
-  };
-
-  const calculateTotal = (currentItems: OrderItem[]) => {
-    const newTotal = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    setTotal(newTotal);
   };
 
   // Recalculate total whenever items change
@@ -86,7 +92,7 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
         mobileMethod,
         bankDetails,
         customerInfo,
-        setItems,
+        setItems: handleSetItems,
         setTotal,
         setPaymentMethod,
         setMobileMethod,
