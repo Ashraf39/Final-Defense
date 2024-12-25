@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Home, ShoppingCart, Package, User } from 'lucide-react';
+import { Home, ShoppingCart, Package, User, ClipboardList, LayoutDashboard } from 'lucide-react';
 
 interface NavbarIconProps {
   to: string;
@@ -61,7 +61,7 @@ export const CartIcon = ({ count = 0 }) => (
 export const OrdersIcon = () => (
   <NavbarIcon
     to="/orders"
-    icon={<Package className="h-6 w-6" strokeWidth={1} stroke="black" />}
+    icon={<ClipboardList className="h-6 w-6" strokeWidth={1} stroke="black" />}
     tooltip="Orders"
   />
 );
@@ -69,7 +69,7 @@ export const OrdersIcon = () => (
 export const DashboardIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<User className="h-6 w-6" strokeWidth={1} stroke="black" />}
+    icon={<LayoutDashboard className="h-6 w-6" strokeWidth={1} stroke="black" />}
     tooltip="Dashboard"
   />
 );
@@ -85,7 +85,7 @@ export const InventoryIcon = () => (
 export const CompanyIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<User className="h-6 w-6" strokeWidth={1} stroke="black" />}
+    icon={<LayoutDashboard className="h-6 w-6" strokeWidth={1} stroke="black" />}
     tooltip="Company Dashboard"
   />
 );
