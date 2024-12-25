@@ -1,52 +1,73 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { OrderItem } from '@/types/order';
 
 export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
   const [items, setItems] = useState<OrderItem[]>(initialItems);
-  const [total, setTotal] = useState(0);
 
-  const calculateTotal = (items: OrderItem[]) => {
+  // Helper function to ensure number type
+  const ensureNumber = (value: string | number): number => {
+    if (typeof value === 'string') {
+      const parsed = parseFloat(value);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+    return value;
+  };
+
+  // Calculate single item total
+  const calculateItemTotal = (item: OrderItem): number => {
+    if (!item.price || !item.quantity) {
+      console.warn('Invalid item data:', item);
+      return 0;
+    }
+
+    const price = ensureNumber(item.price);
+    const quantity = ensureNumber(item.quantity);
+    
+    const itemTotal = price * quantity;
+    console.log(`Calculating total for ${item.name}:`, {
+      price,
+      quantity,
+      itemTotal
+    });
+    
+    return itemTotal;
+  };
+
+  // Calculate cart total
+  const calculateTotal = (items: OrderItem[]): number => {
+    console.log('Calculating total for items:', items);
+    
     if (!items || items.length === 0) {
       console.log('No items to calculate total');
       return 0;
     }
 
-    console.log('Calculating total for items:', items);
-    const calculatedTotal = items.reduce((sum, item) => {
-      if (!item.price || !item.quantity) {
-        console.warn('Invalid item data:', item);
-        return sum;
-      }
-      // Ensure we're working with numbers by converting both price and quantity
-      const price = typeof item.price === 'string' ? parseFloat(item.price) : item.price;
-      const quantity = typeof item.quantity === 'string' ? parseInt(item.quantity) : item.quantity;
-      
-      const itemTotal = price * quantity;
-      console.log(`Item ${item.name}: ${price} * ${quantity} = ${itemTotal}`);
+    const total = items.reduce((sum, item) => {
+      const itemTotal = calculateItemTotal(item);
       return sum + itemTotal;
     }, 0);
-    
-    console.log('Final calculated total:', calculatedTotal);
-    return calculatedTotal;
+
+    console.log('Final calculated total:', total);
+    return total;
   };
 
-  const updateItemQuantity = (medicineId: string, quantity: number) => {
-    console.log(`Updating quantity for medicine ${medicineId} to ${quantity}`);
+  // Update item quantity
+  const updateItemQuantity = (medicineId: string, newQuantity: number) => {
+    console.log('Updating quantity:', { medicineId, newQuantity });
+    
     setItems(prevItems => {
       const updatedItems = prevItems.map(item =>
-        item.medicineId === medicineId ? { ...item, quantity } : item
+        item.medicineId === medicineId 
+          ? { ...item, quantity: ensureNumber(newQuantity) }
+          : item
       );
-      console.log('Updated items after quantity change:', updatedItems);
+      
+      console.log('Items after quantity update:', updatedItems);
       return updatedItems;
     });
   };
 
-  useEffect(() => {
-    console.log('Items changed, recalculating total:', items);
-    const newTotal = calculateTotal(items);
-    console.log('Setting new total:', newTotal);
-    setTotal(newTotal);
-  }, [items]);
+  const total = calculateTotal(items);
 
   return {
     items,
