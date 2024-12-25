@@ -7,7 +7,6 @@ import {
   OrdersIcon,
   DashboardIcon,
   InventoryIcon,
-  CompanyIcon,
 } from "./NavbarIcons";
 import { UserMenu } from "./UserMenu";
 
@@ -44,7 +43,6 @@ export const NavbarActions = ({ cartCount, profileImage }: NavbarActionsProps) =
 
       {user && userRole === "company" && (
         <>
-          <CompanyIcon />
           <DashboardIcon />
           <InventoryIcon />
           <OrdersIcon />
