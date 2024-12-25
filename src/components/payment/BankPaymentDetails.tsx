@@ -12,6 +12,19 @@ interface BankPaymentDetailsProps {
 }
 
 export const BankPaymentDetails = ({ onDetailsChange }: BankPaymentDetailsProps) => {
+  const handleAccountNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^\d]/g, '');
+    if (value.length <= 16) { // Most bank account numbers are up to 16 digits
+      onDetailsChange({
+        accountNumber: value,
+        bankName: (document.getElementById("bankName") as HTMLInputElement)?.value || "",
+        accountName: (document.getElementById("accountName") as HTMLInputElement)?.value || "",
+        branchName: (document.getElementById("branchName") as HTMLInputElement)?.value || "",
+        transactionId: (document.getElementById("transactionId") as HTMLInputElement)?.value || "",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4 mt-4">
       <div>
@@ -47,13 +60,9 @@ export const BankPaymentDetails = ({ onDetailsChange }: BankPaymentDetailsProps)
         <Input
           id="accountNumber"
           placeholder="Enter account number"
-          onChange={(e) => onDetailsChange({
-            accountNumber: e.target.value,
-            bankName: (document.getElementById("bankName") as HTMLInputElement)?.value || "",
-            accountName: (document.getElementById("accountName") as HTMLInputElement)?.value || "",
-            branchName: (document.getElementById("branchName") as HTMLInputElement)?.value || "",
-            transactionId: (document.getElementById("transactionId") as HTMLInputElement)?.value || "",
-          })}
+          type="tel"
+          pattern="[0-9]*"
+          onChange={handleAccountNumberChange}
         />
       </div>
       <div>

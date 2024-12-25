@@ -10,17 +10,26 @@ interface MobilePaymentDetailsProps {
 }
 
 export const MobilePaymentDetails = ({ method, onDetailsChange }: MobilePaymentDetailsProps) => {
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^\d]/g, '');
+    if (value.length <= 11) { // Standard mobile banking number length
+      onDetailsChange({
+        phoneNumber: value,
+        transactionId: (document.getElementById("mobileTransactionId") as HTMLInputElement)?.value || "",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4 mt-4">
       <div>
         <Label htmlFor="phoneNumber">{method} Account Number</Label>
         <Input
           id="phoneNumber"
+          type="tel"
+          pattern="[0-9]*"
           placeholder={`Enter your ${method} account number`}
-          onChange={(e) => onDetailsChange({
-            phoneNumber: e.target.value,
-            transactionId: (document.getElementById("mobileTransactionId") as HTMLInputElement)?.value || "",
-          })}
+          onChange={handlePhoneNumberChange}
         />
       </div>
       <div>

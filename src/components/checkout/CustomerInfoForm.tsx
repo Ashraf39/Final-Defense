@@ -1,6 +1,10 @@
+import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/contexts/AuthContext";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface CustomerFormData {
   displayName: string;
@@ -15,6 +19,38 @@ interface CustomerInfoFormProps {
 }
 
 export const CustomerInfoForm = ({ userFormData, onFormDataChange }: CustomerInfoFormProps) => {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          onFormDataChange({
+            displayName: userData.displayName || "",
+            email: userData.email || "",
+            phoneNumber: userData.phoneNumber || "",
+            address: userData.address || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [user, onFormDataChange]);
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[^\d]/g, '');
+    if (value.length <= 11) { // Assuming Bangladesh phone numbers
+      onFormDataChange({ phoneNumber: value });
+    }
+  };
+
   return (
     <Card className="p-6">
       <h2 className="text-xl font-semibold mb-4">Customer Information</h2>
@@ -42,9 +78,12 @@ export const CustomerInfoForm = ({ userFormData, onFormDataChange }: CustomerInf
           <Label htmlFor="phoneNumber">Phone Number</Label>
           <Input
             id="phoneNumber"
+            type="tel"
             value={userFormData.phoneNumber}
-            onChange={(e) => onFormDataChange({ phoneNumber: e.target.value })}
+            onChange={handlePhoneNumberChange}
+            placeholder="Enter 11-digit phone number"
             required
+            pattern="[0-9]{11}"
           />
         </div>
         <div>
