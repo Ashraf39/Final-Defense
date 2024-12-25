@@ -1,12 +1,14 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Medicine } from "@/types/medicine";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash } from "lucide-react";
+import { Heart, ShoppingCart, ShoppingBag, Pencil, Trash } from "lucide-react";
 import { EditMedicineDialog } from "@/components/inventory/EditMedicineDialog";
 import { DeleteMedicineDialog } from "@/components/inventory/DeleteMedicineDialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { isLiked, toggleLike, addToCart } from "@/lib/medicines";
 
 interface MedicineDetailsDialogProps {
   medicine: Medicine | null;
@@ -17,8 +19,21 @@ interface MedicineDetailsDialogProps {
 export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDetailsDialogProps) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLikedByUser, setIsLikedByUser] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { user, userRole } = useAuth();
+
+  useEffect(() => {
+    const checkIfLiked = async () => {
+      if (user && medicine) {
+        const liked = await isLiked(user.uid, medicine.id);
+        setIsLikedByUser(liked);
+      }
+    };
+    
+    checkIfLiked();
+  }, [user, medicine]);
 
   const handleMedicineUpdated = (updatedMedicine: Medicine) => {
     setIsEditDialogOpen(false);
@@ -36,6 +51,66 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
     });
     onClose();
     navigate("/dashboard");
+  };
+
+  const handleLike = async () => {
+    if (!user || !medicine) {
+      toast({
+        title: "Authentication required",
+        description: "Please login to add to favorites",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+
+    const isNowLiked = await toggleLike(user.uid, medicine.id);
+    setIsLikedByUser(isNowLiked);
+    toast({
+      title: isNowLiked ? "Added to favorites" : "Removed from favorites",
+      description: `Medicine has been ${isNowLiked ? "added to" : "removed from"} your favorites`,
+    });
+  };
+
+  const handleAddToCart = async () => {
+    if (!user || !medicine) {
+      toast({
+        title: "Authentication required",
+        description: "Please login to add to cart",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+
+    await addToCart(user.uid, medicine);
+    toast({
+      title: "Added to cart",
+      description: "Medicine has been added to your cart",
+    });
+  };
+
+  const handleBuy = () => {
+    if (!user || !medicine) {
+      toast({
+        title: "Authentication required",
+        description: "Please login to purchase medicines",
+        variant: "destructive",
+      });
+      navigate("/login");
+      return;
+    }
+    
+    navigate("/checkout", {
+      state: {
+        singleItem: {
+          medicineId: medicine.id,
+          name: medicine.name,
+          quantity: 1,
+          price: medicine.price
+        }
+      }
+    });
   };
 
   if (!medicine) return null;
@@ -72,22 +147,53 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
                 <h3 className="text-lg font-semibold mb-2">Stock</h3>
                 <p className="text-gray-600">{medicine.stock} units available</p>
               </div>
-              <div className="flex gap-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsEditDialogOpen(true)}
-                >
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                >
-                  <Trash className="h-4 w-4 mr-2" />
-                  Delete
-                </Button>
-              </div>
+              {userRole === "regular" ? (
+                <div className="flex gap-4">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-full hover:bg-pink-50"
+                    onClick={handleLike}
+                  >
+                    <Heart 
+                      className={`h-5 w-5 ${isLikedByUser ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
+                    />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-full hover:bg-blue-50"
+                    onClick={handleAddToCart}
+                  >
+                    <ShoppingCart className="h-5 w-5 text-gray-500" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700 text-sm px-4 py-2 h-10 rounded-full flex-grow"
+                    onClick={handleBuy}
+                  >
+                    <ShoppingBag className="h-5 w-5 mr-2" />
+                    Buy
+                  </Button>
+                </div>
+              ) : (userRole === "company" || userRole === "admin") && (
+                <div className="flex gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditDialogOpen(true)}
+                  >
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                  >
+                    <Trash className="h-4 w-4 mr-2" />
+                    Delete
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </DialogContent>
