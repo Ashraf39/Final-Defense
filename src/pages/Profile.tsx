@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CompanyDetailsForm } from "@/components/company/CompanyDetailsForm";
 import { ProfileForm } from "@/components/profile/ProfileForm";
-import { User } from "lucide-react";
 
 export const Profile = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [userData, setUserData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,20 +39,11 @@ export const Profile = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold flex items-center gap-2">
-            <User className="h-6 w-6" />
-            Profile Settings
-          </CardTitle>
-          <CardDescription>
-            Update your profile information and password
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ProfileForm initialData={userData} />
-        </CardContent>
-      </Card>
+      {userRole === "company" ? (
+        <CompanyDetailsForm initialData={userData} />
+      ) : (
+        <ProfileForm initialData={userData} />
+      )}
     </div>
   );
 };
