@@ -4,38 +4,8 @@ import { OrderItem } from '@/types/order';
 export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
   const [items, setItems] = useState<OrderItem[]>(initialItems);
 
-  // Helper function to ensure number type
-  const ensureNumber = (value: string | number): number => {
-    if (typeof value === 'string') {
-      const parsed = parseFloat(value);
-      return isNaN(parsed) ? 0 : parsed;
-    }
-    return value;
-  };
-
-  // Calculate single item total
-  const calculateItemTotal = (item: OrderItem): number => {
-    if (!item.price || !item.quantity) {
-      console.warn('Invalid item data:', item);
-      return 0;
-    }
-
-    const price = ensureNumber(item.price);
-    const quantity = ensureNumber(item.quantity);
-    
-    const itemTotal = price * quantity;
-    console.log(`Calculating total for ${item.name}:`, {
-      price,
-      quantity,
-      itemTotal
-    });
-    
-    return itemTotal;
-  };
-
-  // Calculate cart total
   const calculateTotal = (items: OrderItem[]): number => {
-    console.log('Calculating total for items:', items);
+    console.log('Starting total calculation with items:', items);
     
     if (!items || items.length === 0) {
       console.log('No items to calculate total');
@@ -43,7 +13,18 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
     }
 
     const total = items.reduce((sum, item) => {
-      const itemTotal = calculateItemTotal(item);
+      // Ensure price and quantity are numbers
+      const price = Number(item.price);
+      const quantity = Number(item.quantity);
+      
+      if (isNaN(price) || isNaN(quantity)) {
+        console.warn('Invalid price or quantity for item:', item);
+        return sum;
+      }
+
+      const itemTotal = price * quantity;
+      console.log(`Item ${item.name}: ${price} * ${quantity} = ${itemTotal}`);
+      
       return sum + itemTotal;
     }, 0);
 
@@ -51,18 +32,22 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
     return total;
   };
 
-  // Update item quantity
   const updateItemQuantity = (medicineId: string, newQuantity: number) => {
-    console.log('Updating quantity:', { medicineId, newQuantity });
+    console.log('Updating quantity for medicine:', { medicineId, newQuantity });
     
+    if (newQuantity < 1) {
+      console.warn('Attempted to set invalid quantity:', newQuantity);
+      return;
+    }
+
     setItems(prevItems => {
       const updatedItems = prevItems.map(item =>
         item.medicineId === medicineId 
-          ? { ...item, quantity: ensureNumber(newQuantity) }
+          ? { ...item, quantity: Number(newQuantity) }
           : item
       );
       
-      console.log('Items after quantity update:', updatedItems);
+      console.log('Updated items:', updatedItems);
       return updatedItems;
     });
   };
@@ -73,6 +58,6 @@ export const useCheckoutCalculations = (initialItems: OrderItem[] = []) => {
     items,
     setItems,
     total,
-    updateItemQuantity
+    updateItemQuantity,
   };
 };

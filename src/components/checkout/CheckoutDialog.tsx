@@ -37,22 +37,22 @@ const CheckoutContent = () => {
   useEffect(() => {
     const state = location.state;
     if (state?.singleItem) {
-      console.log('Setting single item:', state.singleItem);
+      console.log('Processing single item purchase:', state.singleItem);
       const initialItems = [{
         medicineId: state.singleItem.medicineId,
         name: state.singleItem.name,
-        quantity: state.singleItem.quantity || 1,
-        price: parseFloat(state.singleItem.price)
+        quantity: Number(state.singleItem.quantity) || 1,
+        price: Number(state.singleItem.price)
       }];
       console.log('Processed single item:', initialItems);
       setItems(initialItems);
     } else if (state?.items && Array.isArray(state.items)) {
-      console.log('Setting multiple items from cart:', state.items);
+      console.log('Processing cart items:', state.items);
       const cartItems = state.items.map((item: any) => ({
         medicineId: item.medicineId,
         name: item.name,
-        quantity: parseInt(item.quantity) || 1,
-        price: parseFloat(item.price)
+        quantity: Number(item.quantity) || 1,
+        price: Number(item.price)
       }));
       console.log('Processed cart items:', cartItems);
       setItems(cartItems);
