@@ -9,7 +9,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import type { UserData } from "@/types/user";
 
-export const RegisterForm = () => {
+interface RegisterFormProps {
+  onSuccess?: () => void;
+}
+
+export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [role, setRole] = useState<"regular" | "company">("regular");
@@ -48,7 +52,7 @@ export const RegisterForm = () => {
         displayName,
         phoneNumber,
         address,
-        profileImage: "", // Initialize with empty string
+        profileImage: "",
         ...(role === "company" && {
           companyName,
           companyDescription,
@@ -64,6 +68,8 @@ export const RegisterForm = () => {
         title: "Registration successful",
         description: "Your account has been created.",
       });
+
+      onSuccess?.();
     } catch (error: any) {
       toast({
         title: "Registration failed",
