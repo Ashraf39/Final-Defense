@@ -10,6 +10,10 @@ interface RecentOrdersProps {
 export const RecentOrders = ({ orders }: RecentOrdersProps) => {
   const navigate = useNavigate();
 
+  const handleViewOrder = (orderId: string) => {
+    navigate(`/orders/${orderId}`);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -20,17 +24,18 @@ export const RecentOrders = ({ orders }: RecentOrdersProps) => {
         {orders.length > 0 ? (
           <div className="space-y-4">
             {orders.map((order) => (
-
               <div key={order.id} className="flex justify-between items-center p-4 border rounded">
                 <div>
                   <p className="font-medium">Order #{order.id.slice(0, 8)}</p>
                   <p className="text-sm text-muted-foreground">BDT {order.total?.toFixed(2)}</p>
                 </div>
-                <Button variant="outline" onClick={() => navigate(`/orders/${order.id}`)}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleViewOrder(order.id)}
+                >
                   View
                 </Button>
               </div>
-
             ))}
           </div>
         ) : (
