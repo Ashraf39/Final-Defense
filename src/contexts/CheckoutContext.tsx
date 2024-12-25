@@ -1,4 +1,6 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import { createContext, useContext, ReactNode } from "react";
+import { useCheckoutCalculations } from "@/hooks/useCheckoutCalculations";
+import { OrderItem } from "@/types/order";
 
 interface BankDetails {
   bankName: string;
@@ -15,13 +17,6 @@ interface CustomerInfo {
   email: string;
 }
 
-interface OrderItem {
-  medicineId: string;
-  name: string;
-  quantity: number;
-  price: number;
-}
-
 interface CheckoutContextType {
   items: OrderItem[];
   total: number;
@@ -30,7 +25,6 @@ interface CheckoutContextType {
   bankDetails: BankDetails;
   customerInfo: CustomerInfo;
   setItems: (items: OrderItem[]) => void;
-  setTotal: (total: number) => void;
   setPaymentMethod: (method: string) => void;
   setMobileMethod: (method: string) => void;
   setBankDetails: (details: BankDetails) => void;
@@ -41,8 +35,7 @@ interface CheckoutContextType {
 const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
 
 export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<OrderItem[]>([]);
-  const [total, setTotal] = useState(0);
+  const { items, setItems, total, updateItemQuantity } = useCheckoutCalculations([]);
   const [paymentMethod, setPaymentMethod] = useState("");
   const [mobileMethod, setMobileMethod] = useState("");
   const [bankDetails, setBankDetails] = useState<BankDetails>({
@@ -59,42 +52,6 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
     email: "",
   });
 
-  const calculateTotal = (currentItems: OrderItem[]) => {
-    console.log('Calculating total for items:', currentItems);
-    const calculatedTotal = currentItems.reduce((sum, item) => {
-      const itemTotal = item.price * item.quantity;
-      console.log(`Item ${item.name}: ${item.price} * ${item.quantity} = ${itemTotal}`);
-      return sum + itemTotal;
-    }, 0);
-    console.log('Final calculated total:', calculatedTotal);
-    return calculatedTotal;
-  };
-
-  const handleSetItems = (newItems: OrderItem[]) => {
-    console.log('Setting new items:', newItems);
-    setItems(newItems);
-  };
-
-  const updateItemQuantity = (medicineId: string, quantity: number) => {
-    setItems(prevItems => {
-      const updatedItems = prevItems.map(item =>
-        item.medicineId === medicineId ? { ...item, quantity } : item
-      );
-      console.log('Updated items after quantity change:', updatedItems);
-      return updatedItems;
-    });
-  };
-
-  // Update total whenever items change
-  useEffect(() => {
-    if (items.length > 0) {
-      console.log('Items changed, recalculating total:', items);
-      const newTotal = calculateTotal(items);
-      console.log('Setting new total:', newTotal);
-      setTotal(newTotal);
-    }
-  }, [items]);
-
   return (
     <CheckoutContext.Provider
       value={{
@@ -104,8 +61,7 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
         mobileMethod,
         bankDetails,
         customerInfo,
-        setItems: handleSetItems,
-        setTotal,
+        setItems,
         setPaymentMethod,
         setMobileMethod,
         setBankDetails,
