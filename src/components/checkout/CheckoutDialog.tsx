@@ -77,6 +77,17 @@ const CheckoutContent = () => {
     );
   };
 
+  const handleQuantityChange = (medicineId: string, newQuantity: number) => {
+    const updatedItems = items.map(item => 
+      item.medicineId === medicineId ? { ...item, quantity: newQuantity } : item
+    );
+    setItems(updatedItems);
+    
+    // Recalculate total
+    const newTotal = updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    setTotal(newTotal);
+  };
+
   const isSubmitDisabled = !paymentMethod || 
     (paymentMethod === "mobile" && !mobileMethod) ||
     (paymentMethod === "bank" && (!bankDetails.bankName || !bankDetails.accountNumber || !bankDetails.transactionId)) ||
@@ -107,7 +118,7 @@ const CheckoutContent = () => {
         loading={loading}
         onSubmit={handleSubmit}
         disabled={isSubmitDisabled}
-        onQuantityChange={updateItemQuantity}
+        onQuantityChange={handleQuantityChange}
       />
     </div>
   );
