@@ -4,6 +4,8 @@ import { CustomerInfoForm } from "./CustomerInfoForm";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
 import { OrderSummary } from "./OrderSummary";
 import { CheckoutProvider, useCheckout } from "@/contexts/CheckoutContext";
+import { useOrderProcessing } from "@/hooks/useOrderProcessing";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CheckoutDialogProps {
   isOpen: boolean;
@@ -11,6 +13,7 @@ interface CheckoutDialogProps {
 }
 
 const CheckoutContent = () => {
+  const { user } = useAuth();
   const {
     items,
     total,
@@ -24,6 +27,30 @@ const CheckoutContent = () => {
     setBankDetails,
     updateItemQuantity,
   } = useCheckout();
+
+  const { loading, processOrderSubmission } = useOrderProcessing(user?.uid || '');
+
+  const handleSubmit = async () => {
+    if (!user) return;
+    
+    await processOrderSubmission(
+      items,
+      total,
+      paymentMethod,
+      mobileMethod,
+      bankDetails,
+      customerInfo,
+      false
+    );
+  };
+
+  const isSubmitDisabled = !paymentMethod || 
+    (paymentMethod === "mobile" && !mobileMethod) ||
+    (paymentMethod === "bank" && (!bankDetails.bankName || !bankDetails.accountNumber || !bankDetails.transactionId)) ||
+    !customerInfo.displayName ||
+    !customerInfo.phoneNumber ||
+    !customerInfo.address ||
+    !customerInfo.email;
 
   return (
     <div className="space-y-6">
@@ -44,13 +71,9 @@ const CheckoutContent = () => {
       <OrderSummary
         items={items}
         total={total}
-        loading={false}
-        onSubmit={() => {}}
-        disabled={
-          !paymentMethod || 
-          (paymentMethod === "mobile" && !mobileMethod) ||
-          (paymentMethod === "bank" && (!bankDetails.bankName || !bankDetails.accountNumber || !bankDetails.transactionId))
-        }
+        loading={loading}
+        onSubmit={handleSubmit}
+        disabled={isSubmitDisabled}
         onQuantityChange={updateItemQuantity}
       />
     </div>

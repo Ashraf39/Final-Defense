@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 interface BankDetails {
   bankName: string;
@@ -64,8 +64,18 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
       item.medicineId === medicineId ? { ...item, quantity } : item
     );
     setItems(updatedItems);
-    setTotal(updatedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+    calculateTotal(updatedItems);
   };
+
+  const calculateTotal = (currentItems: OrderItem[]) => {
+    const newTotal = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    setTotal(newTotal);
+  };
+
+  // Recalculate total whenever items change
+  useEffect(() => {
+    calculateTotal(items);
+  }, [items]);
 
   return (
     <CheckoutContext.Provider
