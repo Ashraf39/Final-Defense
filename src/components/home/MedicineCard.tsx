@@ -32,13 +32,6 @@ export const MedicineCard = ({
     checkIfLiked();
   }, [user, medicine.id]);
 
-  const getImageUrl = (imageUrl: string | undefined) => {
-    if (!imageUrl || imageUrl === "") return "/placeholder.svg";
-    if (imageUrl.startsWith("http")) return imageUrl;
-    if (imageUrl.startsWith("/")) return imageUrl;
-    return `/placeholder.svg`;
-  };
-
   const handleLike = async () => {
     await onLike(medicine.id);
     setIsLikedByUser(!isLikedByUser);
@@ -47,7 +40,7 @@ export const MedicineCard = ({
   return (
     <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-green-100">
       <img
-        src={getImageUrl(medicine.image)}
+        src={medicine.image || "/placeholder.svg"}
         alt={medicine.name}
         className="w-full h-24 object-cover rounded-t-lg"
         onError={(e) => {
