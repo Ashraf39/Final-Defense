@@ -1,12 +1,14 @@
+export interface OrderItem {
+  medicineId: string;
+  name: string;
+  quantity: number;
+  price: number;
+}
+
 export interface Order {
   id: string;
   userId: string;
-  items: {
-    medicineId: string;
-    name: string;
-    quantity: number;
-    price: number;
-  }[];
+  items: OrderItem[];
   total: number;
   status: string;
   createdAt: Date;
