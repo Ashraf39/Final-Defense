@@ -92,7 +92,7 @@ export const MedicinesList = () => {
                   <TableRow key={medicine.id}>
                     <TableCell className="font-medium">{medicine.name}</TableCell>
                     <TableCell>{medicine.description}</TableCell>
-                    <TableCell>${medicine.price}</TableCell>
+                    <TableCell>BDT {medicine.price}</TableCell>
                     <TableCell>{medicine.stock}</TableCell>
                   </TableRow>
                 )) || (
