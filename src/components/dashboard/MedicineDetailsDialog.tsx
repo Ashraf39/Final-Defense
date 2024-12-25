@@ -1,7 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Medicine } from "@/types/medicine";
-import { Button } from "@/components/ui/button";
-import { Heart, ShoppingCart, ShoppingBag, Pencil, Trash } from "lucide-react";
 import { EditMedicineDialog } from "@/components/inventory/EditMedicineDialog";
 import { DeleteMedicineDialog } from "@/components/inventory/DeleteMedicineDialog";
 import { useState, useEffect } from "react";
@@ -9,6 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { isLiked, toggleLike, addToCart } from "@/lib/medicines";
+import { MedicineActionButtons } from "./MedicineActionButtons";
+import { MedicineAdminActions } from "./MedicineAdminActions";
 
 interface MedicineDetailsDialogProps {
   medicine: Medicine | null;
@@ -54,7 +54,7 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
   };
 
   const handleLike = async () => {
-    if (!user || !medicine) {
+    if (!user) {
       toast({
         title: "Authentication required",
         description: "Please login to add to favorites",
@@ -63,6 +63,8 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
       navigate("/login");
       return;
     }
+
+    if (!medicine) return;
 
     const isNowLiked = await toggleLike(user.uid, medicine.id);
     setIsLikedByUser(isNowLiked);
@@ -73,7 +75,7 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
   };
 
   const handleAddToCart = async () => {
-    if (!user || !medicine) {
+    if (!user) {
       toast({
         title: "Authentication required",
         description: "Please login to add to cart",
@@ -83,6 +85,8 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
       return;
     }
 
+    if (!medicine) return;
+
     await addToCart(user.uid, medicine);
     toast({
       title: "Added to cart",
@@ -91,7 +95,7 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
   };
 
   const handleBuy = () => {
-    if (!user || !medicine) {
+    if (!user) {
       toast({
         title: "Authentication required",
         description: "Please login to purchase medicines",
@@ -101,6 +105,8 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
       return;
     }
     
+    if (!medicine) return;
+
     navigate("/checkout", {
       state: {
         singleItem: {
@@ -147,52 +153,19 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
                 <h3 className="text-lg font-semibold mb-2">Stock</h3>
                 <p className="text-gray-600">{medicine.stock} units available</p>
               </div>
-              {userRole === "regular" ? (
-                <div className="flex gap-4">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-full hover:bg-pink-50"
-                    onClick={handleLike}
-                  >
-                    <Heart 
-                      className={`h-5 w-5 ${isLikedByUser ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
-                    />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-full hover:bg-blue-50"
-                    onClick={handleAddToCart}
-                  >
-                    <ShoppingCart className="h-5 w-5 text-gray-500" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    className="bg-green-600 hover:bg-green-700 text-sm px-4 py-2 h-10 rounded-full flex-grow"
-                    onClick={handleBuy}
-                  >
-                    <ShoppingBag className="h-5 w-5 mr-2" />
-                    Buy
-                  </Button>
-                </div>
+              {userRole === "regular" || !userRole ? (
+                <MedicineActionButtons
+                  medicine={medicine}
+                  isLikedByUser={isLikedByUser}
+                  onLike={handleLike}
+                  onAddToCart={handleAddToCart}
+                  onBuy={handleBuy}
+                />
               ) : (userRole === "company" || userRole === "admin") && (
-                <div className="flex gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsEditDialogOpen(true)}
-                  >
-                    <Pencil className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => setIsDeleteDialogOpen(true)}
-                  >
-                    <Trash className="h-4 w-4 mr-2" />
-                    Delete
-                  </Button>
-                </div>
+                <MedicineAdminActions
+                  onEdit={() => setIsEditDialogOpen(true)}
+                  onDelete={() => setIsDeleteDialogOpen(true)}
+                />
               )}
             </div>
           </div>
