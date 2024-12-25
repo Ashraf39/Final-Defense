@@ -44,7 +44,7 @@ export const OrderItem = ({ name, quantity, price, onQuantityChange }: OrderItem
           </Button>
         </div>
       </div>
-      <p className="font-medium">${(price * quantity).toFixed(2)}</p>
+      <p className="font-medium">BDT {(price * quantity).toFixed(2)}</p>
     </div>
   );
 };

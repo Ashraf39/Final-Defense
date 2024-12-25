@@ -59,7 +59,7 @@ export const MedicineCard = ({
         <h3 className="text-sm font-medium mb-1 truncate">{medicine.name}</h3>
         <p className="text-xs text-gray-600 mb-2 line-clamp-2">{medicine.description}</p>
         <div className="flex justify-between items-center">
-          <span className="text-sm font-bold text-green-600">${medicine.price}</span>
+          <span className="text-sm font-bold text-green-600">BDT {medicine.price}</span>
           <div className="flex gap-1">
             <Button
               variant="ghost"

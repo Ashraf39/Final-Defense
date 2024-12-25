@@ -87,7 +87,7 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
                   />
                   <div>
                     <h4 className="font-medium text-gray-900">{medicine.name}</h4>
-                    <p className="text-sm text-gray-500">${medicine.price}</p>
+                    <p className="text-sm text-gray-500">BDT {medicine.price}</p>
                   </div>
                 </div>
               </Link>
