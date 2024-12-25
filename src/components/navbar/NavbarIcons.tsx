@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
@@ -12,44 +11,42 @@ interface NavbarIconProps {
   to: string;
   icon: React.ReactNode;
   tooltip: string;
-  className?: string;
 }
 
-export const NavbarIcon = ({ to, icon, tooltip, className = "" }: NavbarIconProps) => (
-  <TooltipProvider>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Link to={to}>
-          <Button 
-            variant="ghost" 
-            size="icon"
-            className={`hover:scale-110 transition-transform duration-200 ${className}`}
+const NavbarIcon = ({ to, icon, tooltip }: NavbarIconProps) => {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Link
+            to={to}
+            className="relative inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-green-50 transition-colors"
           >
             {icon}
-          </Button>
-        </Link>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{tooltip}</p>
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
-);
+          </Link>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 export const HomeIcon = () => (
   <NavbarIcon
     to="/"
-    icon={<Home className="h-5 w-5 text-green-600 hover:text-green-700" />}
+    icon={<Home height="6" width="6" strokeWidth="1" stroke="black" />}
     tooltip="Home"
   />
 );
 
-export const CartIcon = ({ count }: { count: number }) => (
+export const CartIcon = ({ count = 0 }) => (
   <NavbarIcon
     to="/cart"
     icon={
       <div className="relative">
-        <ShoppingCart className="h-5 w-5 text-green-600 hover:text-green-700" />
+        <ShoppingCart height="6" width="6" strokeWidth="1" stroke="black" />
         {count > 0 && (
           <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-scale-in">
             {count}
@@ -57,14 +54,14 @@ export const CartIcon = ({ count }: { count: number }) => (
         )}
       </div>
     }
-    tooltip="Shopping Cart"
+    tooltip="Cart"
   />
 );
 
 export const OrdersIcon = () => (
   <NavbarIcon
     to="/orders"
-    icon={<Package className="h-5 w-5 text-green-600 hover:text-green-700" />}
+    icon={<Package height="6" width="6" strokeWidth="1" stroke="black" />}
     tooltip="Orders"
   />
 );
@@ -72,7 +69,7 @@ export const OrdersIcon = () => (
 export const DashboardIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<User className="h-5 w-5 text-green-600 hover:text-green-700" />}
+    icon={<User height="6" width="6" strokeWidth="1" stroke="black" />}
     tooltip="Dashboard"
   />
 );
@@ -80,7 +77,7 @@ export const DashboardIcon = () => (
 export const InventoryIcon = () => (
   <NavbarIcon
     to="/inventory"
-    icon={<Package className="h-5 w-5 text-green-600 hover:text-green-700" />}
+    icon={<Package height="6" width="6" strokeWidth="1" stroke="black" />}
     tooltip="Inventory"
   />
 );
@@ -88,7 +85,7 @@ export const InventoryIcon = () => (
 export const CompanyIcon = () => (
   <NavbarIcon
     to="/dashboard"
-    icon={<User className="h-5 w-5 text-green-600 hover:text-green-700" />}
+    icon={<User height="6" width="6" strokeWidth="1" stroke="black" />}
     tooltip="Company Dashboard"
   />
 );
