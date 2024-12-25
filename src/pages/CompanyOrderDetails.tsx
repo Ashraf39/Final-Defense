@@ -5,8 +5,8 @@ import { OrderErrorState } from "@/components/orders/OrderErrorState";
 import { useOrderDetails } from "@/hooks/useOrderDetails";
 
 export const CompanyOrderDetails = () => {
-  const { id } = useParams();
-  const { data: order, isLoading } = useOrderDetails(id);
+  const { id: invoiceNumber } = useParams();
+  const { data: order, isLoading } = useOrderDetails(invoiceNumber);
 
   if (isLoading) {
     return <OrderLoadingState />;
@@ -18,11 +18,7 @@ export const CompanyOrderDetails = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Order Details</h1>
-      <OrderCard 
-        order={order} 
-        isCompany={true}
-      />
+      <OrderCard order={order} isCompany={true} />
     </div>
   );
 };

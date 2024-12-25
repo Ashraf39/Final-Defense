@@ -10,8 +10,8 @@ interface RecentOrdersProps {
 export const RecentOrders = ({ orders }: RecentOrdersProps) => {
   const navigate = useNavigate();
 
-  const handleViewOrder = (orderId: string) => {
-    navigate(`/dashboard/orders/${orderId}`);
+  const handleViewOrder = (invoiceNumber: string) => {
+    navigate(`/dashboard/orders/${invoiceNumber}`);
   };
 
   return (
@@ -26,12 +26,12 @@ export const RecentOrders = ({ orders }: RecentOrdersProps) => {
             {orders.map((order) => (
               <div key={order.id} className="flex justify-between items-center p-4 border rounded">
                 <div>
-                  <p className="font-medium">Order #{order.id.slice(0, 8)}</p>
+                  <p className="font-medium">Invoice #{order.invoiceNumber}</p>
                   <p className="text-sm text-muted-foreground">BDT {order.total?.toFixed(2)}</p>
                 </div>
                 <Button 
                   variant="outline" 
-                  onClick={() => handleViewOrder(order.id)}
+                  onClick={() => handleViewOrder(order.invoiceNumber)}
                 >
                   View
                 </Button>

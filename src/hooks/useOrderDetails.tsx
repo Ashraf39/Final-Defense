@@ -1,17 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Order } from "@/types/order";
 
-export const useOrderDetails = (orderId: string | undefined) => {
+export const useOrderDetails = (invoiceNumber: string | undefined) => {
   return useQuery({
-    queryKey: ['order', orderId],
+    queryKey: ['order', invoiceNumber],
     queryFn: async () => {
-      if (!orderId) throw new Error('Order ID is required');
-      const orderDoc = await getDoc(doc(db, "orders", orderId));
-      if (!orderDoc.exists()) throw new Error('Order not found');
+      if (!invoiceNumber) throw new Error('Invoice number is required');
       
+      const ordersRef = collection(db, "orders");
+      const q = query(ordersRef, where("invoiceNumber", "==", invoiceNumber));
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        throw new Error('Order not found');
+      }
+      
+      const orderDoc = querySnapshot.docs[0];
       const data = orderDoc.data();
+      
       const order: Order = {
         id: orderDoc.id,
         userId: data.userId,
