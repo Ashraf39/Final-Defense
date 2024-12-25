@@ -12,12 +12,16 @@ interface AuthDialogProps {
 }
 
 export const AuthDialog = ({ isOpen, onClose, defaultTab = "login" }: AuthDialogProps) => {
-  const [activeTab, setActiveTab] = useState(defaultTab);
+  const [activeTab, setActiveTab] = useState<"login" | "register">(defaultTab);
   const [registeredEmail, setRegisteredEmail] = useState("");
 
   const handleRegistrationComplete = (email: string) => {
     setRegisteredEmail(email);
     setActiveTab("login");
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as "login" | "register");
   };
 
   return (
@@ -29,7 +33,7 @@ export const AuthDialog = ({ isOpen, onClose, defaultTab = "login" }: AuthDialog
           </DialogTitle>
         </DialogHeader>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="register">Register</TabsTrigger>
