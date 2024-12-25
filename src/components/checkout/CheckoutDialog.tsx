@@ -6,6 +6,8 @@ import { OrderSummary } from "./OrderSummary";
 import { CheckoutProvider, useCheckout } from "@/contexts/CheckoutContext";
 import { useOrderProcessing } from "@/hooks/useOrderProcessing";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 interface CheckoutDialogProps {
   isOpen: boolean;
@@ -14,6 +16,7 @@ interface CheckoutDialogProps {
 
 const CheckoutContent = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const {
     items,
     total,
@@ -26,9 +29,19 @@ const CheckoutContent = () => {
     setMobileMethod,
     setBankDetails,
     updateItemQuantity,
+    setItems,
   } = useCheckout();
 
   const { loading, processOrderSubmission } = useOrderProcessing(user?.uid || '');
+
+  // Initialize items from location state
+  useEffect(() => {
+    const state = location.state;
+    if (state?.singleItem) {
+      console.log('Setting single item:', state.singleItem); // Debug log
+      setItems([state.singleItem]);
+    }
+  }, [location.state, setItems]);
 
   const handleSubmit = async () => {
     if (!user) return;

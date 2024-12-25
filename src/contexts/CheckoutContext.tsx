@@ -63,10 +63,11 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
     return currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   };
 
-  // Initialize total when items are first set
   const handleSetItems = (newItems: OrderItem[]) => {
+    console.log('Setting new items:', newItems); // Debug log
     setItems(newItems);
     const newTotal = calculateTotal(newItems);
+    console.log('Calculated new total:', newTotal); // Debug log
     setTotal(newTotal);
   };
 
@@ -81,7 +82,9 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
 
   // Recalculate total whenever items change
   useEffect(() => {
+    console.log('Items changed:', items); // Debug log
     const newTotal = calculateTotal(items);
+    console.log('New total calculated:', newTotal); // Debug log
     setTotal(newTotal);
   }, [items]);
 
