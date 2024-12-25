@@ -60,14 +60,14 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const calculateTotal = (currentItems: OrderItem[]) => {
-    const newTotal = currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    setTotal(newTotal);
+    return currentItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   };
 
   // Initialize total when items are first set
   const handleSetItems = (newItems: OrderItem[]) => {
     setItems(newItems);
-    calculateTotal(newItems);
+    const newTotal = calculateTotal(newItems);
+    setTotal(newTotal);
   };
 
   const updateItemQuantity = (medicineId: string, quantity: number) => {
@@ -75,12 +75,14 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
       item.medicineId === medicineId ? { ...item, quantity } : item
     );
     setItems(updatedItems);
-    calculateTotal(updatedItems);
+    const newTotal = calculateTotal(updatedItems);
+    setTotal(newTotal);
   };
 
   // Recalculate total whenever items change
   useEffect(() => {
-    calculateTotal(items);
+    const newTotal = calculateTotal(items);
+    setTotal(newTotal);
   }, [items]);
 
   return (

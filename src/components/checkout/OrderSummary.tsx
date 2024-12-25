@@ -27,9 +27,6 @@ export const OrderSummary = ({
   disabled,
   onQuantityChange 
 }: OrderSummaryProps) => {
-  // Calculate the total directly from items to ensure accuracy
-  const calculatedTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
   return (
     <>
       <Card className="p-6">
@@ -47,7 +44,7 @@ export const OrderSummary = ({
           <div className="border-t pt-4">
             <div className="flex justify-between items-center">
               <p className="font-semibold">Total:</p>
-              <p className="font-semibold">BDT {calculatedTotal.toFixed(2)}</p>
+              <p className="font-semibold">BDT {total.toFixed(2)}</p>
             </div>
           </div>
         </div>
