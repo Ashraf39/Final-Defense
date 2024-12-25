@@ -59,7 +59,7 @@ export const MedicineCard = ({
   return (
     <>
       <div 
-        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-green-100 cursor-pointer"
+        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 border border-green-100 cursor-pointer"
         onClick={() => setShowDetailsDialog(true)}
       >
         <img
