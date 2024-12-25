@@ -36,14 +36,7 @@ export const UserMenu = ({ profileImage, userRole, onLogout }: UserMenuProps) =>
         {userRole !== "admin" && (
           <DropdownMenuItem asChild>
             <Link to="/profile" className="w-full cursor-pointer">
-              Profile
-            </Link>
-          </DropdownMenuItem>
-        )}
-        {userRole === "company" && (
-          <DropdownMenuItem asChild>
-            <Link to="/dashboard" className="w-full cursor-pointer">
-              Dashboard
+              {userRole === "company" ? "Company Details" : "Profile"}
             </Link>
           </DropdownMenuItem>
         )}
