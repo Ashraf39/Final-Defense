@@ -13,6 +13,7 @@ import { MedicineDetails } from "@/pages/MedicineDetails";
 import { CompanyMedicines } from "@/pages/CompanyMedicines";
 import { Cart } from "@/pages/Cart";
 import { Orders } from "@/pages/Orders";
+import { OrderDetails } from "@/pages/OrderDetails";
 import { Checkout } from "@/pages/Checkout";
 import { Inventory } from "@/pages/Inventory";
 import { useAuth } from "@/contexts/AuthContext";
@@ -69,6 +70,7 @@ const AppRoutes = () => {
       <Route path="/company/:id" element={<CompanyMedicines />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/orders" element={<Orders />} />
+      <Route path="/orders/:id" element={<OrderDetails />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/inventory" element={<Inventory />} />
     </Routes>
