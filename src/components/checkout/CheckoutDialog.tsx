@@ -8,6 +8,7 @@ import { useOrderProcessing } from "@/hooks/useOrderProcessing";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface CheckoutDialogProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface CheckoutDialogProps {
 const CheckoutContent = () => {
   const { user } = useAuth();
   const location = useLocation();
+  const { toast } = useToast();
   const {
     items,
     setItems,
@@ -64,17 +66,47 @@ const CheckoutContent = () => {
   }, [location.state, setItems]);
 
   const handleSubmit = async () => {
-    if (!user) return;
-    
-    await processOrderSubmission(
-      items,
-      total,
-      paymentMethod,
-      mobileMethod,
-      bankDetails,
-      customerInfo,
-      false
-    );
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "Please log in to place an order",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!items.length) {
+      toast({
+        title: "Error",
+        description: "No items in cart",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await processOrderSubmission(
+        items,
+        total,
+        paymentMethod,
+        mobileMethod,
+        bankDetails,
+        customerInfo,
+        false
+      );
+      
+      toast({
+        title: "Success",
+        description: "Order placed successfully",
+      });
+    } catch (error) {
+      console.error('Error processing order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to place order. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleQuantityChange = (medicineId: string, newQuantity: number) => {
@@ -94,7 +126,8 @@ const CheckoutContent = () => {
     !customerInfo.displayName ||
     !customerInfo.phoneNumber ||
     !customerInfo.address ||
-    !customerInfo.email;
+    !customerInfo.email ||
+    !items.length;
 
   return (
     <div className="space-y-6">
