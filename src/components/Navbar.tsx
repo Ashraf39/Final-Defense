@@ -6,7 +6,7 @@ import { NavbarLogo } from "./navbar/NavbarLogo";
 import { NavbarActions } from "./navbar/NavbarActions";
 
 export const Navbar = () => {
-  const { user } = useAuth();
+  const { user, userRole } = useAuth();
   const [cartCount, setCartCount] = useState(0);
   const [profileImage, setProfileImage] = useState<string | undefined>();
 
@@ -25,11 +25,15 @@ export const Navbar = () => {
         setCartCount(totalQuantity);
       });
 
-      // Profile image listener
+      // Profile/Company logo image listener
       const userDocRef = doc(db, "users", user.uid);
       const unsubscribeProfile = onSnapshot(userDocRef, (doc) => {
         if (doc.exists()) {
-          setProfileImage(doc.data().profileImage);
+          // Use companyLogo for company users, otherwise use profileImage
+          const userData = doc.data();
+          setProfileImage(
+            userRole === "company" ? userData.companyLogo : userData.profileImage
+          );
         }
       });
 
@@ -41,7 +45,7 @@ export const Navbar = () => {
       setCartCount(0);
       setProfileImage(undefined);
     }
-  }, [user]);
+  }, [user, userRole]);
 
   return (
     <nav className="bg-white/80 border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm transition-all duration-300">
