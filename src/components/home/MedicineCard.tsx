@@ -42,7 +42,7 @@ export const MedicineCard = ({
       <img
         src={medicine.image || "/placeholder.svg"}
         alt={medicine.name}
-        className="w-full h-24 object-cover rounded-t-lg"
+        className="w-full h-32 object-contain rounded-t-lg p-2"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.src = "/placeholder.svg";
