@@ -34,12 +34,17 @@ const CheckoutContent = () => {
 
   const { loading, processOrderSubmission } = useOrderProcessing(user?.uid || '');
 
-  // Initialize items from location state
   useEffect(() => {
     const state = location.state;
     if (state?.singleItem) {
       console.log('Setting single item:', state.singleItem);
-      setItems([state.singleItem]);
+      const initialItems = [{
+        medicineId: state.singleItem.medicineId,
+        name: state.singleItem.name,
+        quantity: state.singleItem.quantity || 1,
+        price: state.singleItem.price
+      }];
+      setItems(initialItems);
     } else if (state?.items) {
       console.log('Setting multiple items:', state.items);
       setItems(state.items);

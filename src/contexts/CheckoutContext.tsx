@@ -73,24 +73,24 @@ export const CheckoutProvider = ({ children }: { children: ReactNode }) => {
   const handleSetItems = (newItems: OrderItem[]) => {
     console.log('Setting new items:', newItems);
     setItems(newItems);
-    const newTotal = calculateTotal(newItems);
-    console.log('Setting new total:', newTotal);
-    setTotal(newTotal);
   };
 
   const updateItemQuantity = (medicineId: string, quantity: number) => {
-    const updatedItems = items.map(item =>
-      item.medicineId === medicineId ? { ...item, quantity } : item
-    );
-    setItems(updatedItems);
+    setItems(prevItems => {
+      const updatedItems = prevItems.map(item =>
+        item.medicineId === medicineId ? { ...item, quantity } : item
+      );
+      console.log('Updated items after quantity change:', updatedItems);
+      return updatedItems;
+    });
   };
 
-  // Recalculate total whenever items change
+  // Update total whenever items change
   useEffect(() => {
     if (items.length > 0) {
       console.log('Items changed, recalculating total:', items);
       const newTotal = calculateTotal(items);
-      console.log('New total calculated:', newTotal);
+      console.log('Setting new total:', newTotal);
       setTotal(newTotal);
     }
   }, [items]);
