@@ -6,8 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const getImageUrl = (imageUrl: string | undefined) => {
-  if (!imageUrl || imageUrl === "") return "/placeholder.svg";
+  if (!imageUrl) return "/placeholder.svg";
   if (imageUrl.startsWith("http")) return imageUrl;
   if (imageUrl.startsWith("/")) return imageUrl;
-  return `/placeholder.svg`;
+  if (imageUrl.startsWith("data:")) return imageUrl;
+  return `/images/${imageUrl}`; // Handle relative paths in the images directory
 };
