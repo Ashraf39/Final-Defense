@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { isLiked } from "@/lib/medicines";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthDialog } from "@/components/auth/AuthDialog";
+import { MedicineDetailsDialog } from "@/components/dashboard/MedicineDetailsDialog";
 
 interface MedicineCardProps {
   medicine: Medicine;
@@ -22,6 +23,7 @@ export const MedicineCard = ({
   const { user } = useAuth();
   const [isLikedByUser, setIsLikedByUser] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
   useEffect(() => {
     const checkIfLiked = async () => {
@@ -56,7 +58,10 @@ export const MedicineCard = ({
 
   return (
     <>
-      <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-green-100">
+      <div 
+        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-green-100 cursor-pointer"
+        onClick={() => setShowDetailsDialog(true)}
+      >
         <img
           src={medicine.image || "/placeholder.svg"}
           alt={medicine.name}
@@ -66,7 +71,7 @@ export const MedicineCard = ({
             target.src = "/placeholder.svg";
           }}
         />
-        <div className="p-4">
+        <div className="p-4" onClick={(e) => e.stopPropagation()}>
           <h3 className="text-base font-medium mb-2 truncate">{medicine.name}</h3>
           <p className="text-sm text-gray-600 mb-3 line-clamp-2">{medicine.description}</p>
           <div className="flex justify-center mb-3">
@@ -106,6 +111,12 @@ export const MedicineCard = ({
       <AuthDialog 
         isOpen={showAuthDialog} 
         onClose={() => setShowAuthDialog(false)}
+      />
+
+      <MedicineDetailsDialog
+        medicine={medicine}
+        isOpen={showDetailsDialog}
+        onClose={() => setShowDetailsDialog(false)}
       />
     </>
   );
