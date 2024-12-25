@@ -60,43 +60,43 @@ export const MedicineCard = ({
         <img
           src={medicine.image || "/placeholder.svg"}
           alt={medicine.name}
-          className="w-full h-32 object-contain rounded-t-lg p-2"
+          className="w-full h-48 object-contain rounded-t-lg p-3"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = "/placeholder.svg";
           }}
         />
-        <div className="p-2">
-          <h3 className="text-sm font-medium mb-1 truncate">{medicine.name}</h3>
-          <p className="text-xs text-gray-600 mb-2 line-clamp-2">{medicine.description}</p>
-          <div className="flex justify-center mb-2">
-            <span className="text-sm font-bold text-green-600">BDT {medicine.price}</span>
+        <div className="p-4">
+          <h3 className="text-base font-medium mb-2 truncate">{medicine.name}</h3>
+          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{medicine.description}</p>
+          <div className="flex justify-center mb-3">
+            <span className="text-lg font-bold text-green-600">BDT {medicine.price}</span>
           </div>
-          <div className="flex justify-between gap-1">
+          <div className="flex justify-between gap-2">
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full hover:bg-pink-50"
+              className="h-10 w-10 rounded-full hover:bg-pink-50"
               onClick={handleLike}
             >
               <Heart 
-                className={`h-4 w-4 ${isLikedByUser ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
+                className={`h-5 w-5 ${isLikedByUser ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
               />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full hover:bg-blue-50"
+              className="h-10 w-10 rounded-full hover:bg-blue-50"
               onClick={handleAddToCart}
             >
-              <ShoppingCart className="h-4 w-4 text-gray-500" />
+              <ShoppingCart className="h-5 w-5 text-gray-500" />
             </Button>
             <Button
               size="sm"
-              className="bg-green-600 hover:bg-green-700 text-xs px-3 py-1 h-8 rounded-full flex-grow"
+              className="bg-green-600 hover:bg-green-700 text-sm px-4 py-2 h-10 rounded-full flex-grow"
               onClick={handleBuy}
             >
-              <ShoppingBag className="h-4 w-4 mr-1" />
+              <ShoppingBag className="h-5 w-5 mr-2" />
               Buy
             </Button>
           </div>
