@@ -66,7 +66,7 @@ export const MedicineCard = ({
           <img
             src={medicine.image || "/placeholder.svg"}
             alt={medicine.name}
-            className="w-full h-[34px] sm:h-[45px] object-contain rounded-t-xl p-2 sm:p-3 bg-gradient-to-b from-[#F2FCE2] to-white transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-[120px] sm:h-[160px] object-contain rounded-t-xl p-2 sm:p-3 bg-gradient-to-b from-[#F2FCE2] to-white transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = "/placeholder.svg";
