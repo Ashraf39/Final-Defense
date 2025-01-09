@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Medicine } from "@/types/medicine";
 import { useToast } from "@/components/ui/use-toast";
-import { MedicineCard } from "./MedicineCard";
+import { ProductTile } from "@/components/products/ProductTile";
+import { useState } from "react";
+import { MedicineDetailsDialog } from "../dashboard/MedicineDetailsDialog";
 
 interface FavoritesSectionProps {
   likedMedicines: Medicine[];
@@ -18,6 +20,7 @@ export const FavoritesSection = ({
 }: FavoritesSectionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
 
   const handleBuy = (medicine: Medicine) => {
     if (!isAuthenticated) {
@@ -43,21 +46,27 @@ export const FavoritesSection = ({
   };
 
   return (
-    <section className="container mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Your Favorites</h2>
-      <div className="w-full max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 p-8">
-          {likedMedicines.map((medicine) => (
-            <MedicineCard
-              key={medicine.id}
-              medicine={medicine}
-              onLike={onLike}
-              onAddToCart={onAddToCart}
-              onBuy={handleBuy}
-            />
-          ))}
+    <>
+      <section className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Your Favorites</h2>
+        <div className="w-full max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 p-4">
+            {likedMedicines.map((medicine) => (
+              <ProductTile
+                key={medicine.id}
+                medicine={medicine}
+                onClick={() => setSelectedMedicine(medicine)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <MedicineDetailsDialog
+        medicine={selectedMedicine}
+        isOpen={!!selectedMedicine}
+        onClose={() => setSelectedMedicine(null)}
+      />
+    </>
   );
 };

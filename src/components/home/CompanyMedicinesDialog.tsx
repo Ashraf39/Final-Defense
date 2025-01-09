@@ -3,11 +3,13 @@ import { Medicine } from "@/types/medicine";
 import { useQuery } from "@tanstack/react-query";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { MedicineCard } from "./MedicineCard";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { addToCart, toggleLike } from "@/lib/medicines";
+import { ProductTile } from "@/components/products/ProductTile";
+import { MedicineDetailsDialog } from "../dashboard/MedicineDetailsDialog";
+import { useState } from "react";
 
 interface CompanyMedicinesDialogProps {
   companyId: string | null;
@@ -23,6 +25,7 @@ export const CompanyMedicinesDialog = ({
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
 
   const { data: medicines = [], isLoading } = useQuery({
     queryKey: ["company-medicines", companyId],
@@ -99,27 +102,35 @@ export const CompanyMedicinesDialog = ({
   };
 
   return (
-    <Dialog open={!!companyId} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gradient-to-b from-[#fdfcfb] to-[#e2d1c3]">
-        <div className="py-6">
-          <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-gray-800 text-center font-serif">{companyName}'s Medicines</h2>
-          {isLoading ? (
-            <div className="text-center text-gray-600">Loading medicines...</div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
-              {medicines.map((medicine) => (
-                <MedicineCard
-                  key={medicine.id}
-                  medicine={medicine}
-                  onLike={handleLike}
-                  onAddToCart={handleAddToCart}
-                  onBuy={handleBuy}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={!!companyId} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-gradient-to-b from-[#fdfcfb] to-[#e2d1c3]">
+          <div className="py-6">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-gray-800 text-center font-serif">
+              {companyName}'s Medicines
+            </h2>
+            {isLoading ? (
+              <div className="text-center text-gray-600">Loading medicines...</div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 p-4">
+                {medicines.map((medicine) => (
+                  <ProductTile
+                    key={medicine.id}
+                    medicine={medicine}
+                    onClick={() => setSelectedMedicine(medicine)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <MedicineDetailsDialog
+        medicine={selectedMedicine}
+        isOpen={!!selectedMedicine}
+        onClose={() => setSelectedMedicine(null)}
+      />
+    </>
   );
 };
