@@ -108,8 +108,8 @@ export const CompanyMedicines = () => {
       <h1 className="text-2xl font-bold mb-8 text-center text-gray-800">
         {companyName}'s Medicines
       </h1>
-      <div className="w-full max-w-[1200px] mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-8 px-4">
+      <div className="w-full max-w-[1000px] mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10 px-4">
           {medicines.map((medicine) => (
             <MedicineCard
               key={medicine.id}
