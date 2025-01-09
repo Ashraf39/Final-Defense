@@ -45,8 +45,8 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
 
         {medicines.length > 0 && (
           <div className="w-full max-w-[1000px] mx-auto">
-            <h3 className="text-lg font-semibold mb-4">Medicines</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-4">
+            <h3 className="text-lg font-semibold mb-4 text-left">Medicines</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 px-2 sm:px-4 justify-items-start">
               {medicines.map((medicine) => (
                 <div className="sm:transform-none transform scale-40" key={medicine.id}>
                   <SearchMedicineCard
