@@ -59,7 +59,7 @@ export const MedicineCard = ({
   return (
     <>
       <div 
-        className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-102 border border-[#D3E4FD] cursor-pointer w-full flex flex-col overflow-hidden group"
+        className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-102 border border-[#D3E4FD] cursor-pointer w-full min-w-[280px] flex flex-col overflow-hidden group"
         onClick={() => setShowDetailsDialog(true)}
       >
         <div className="relative overflow-hidden">
@@ -86,7 +86,7 @@ export const MedicineCard = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-pink-50 transition-colors"
+                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-pink-50 transition-colors flex-shrink-0"
                 onClick={handleLike}
               >
                 <Heart 
@@ -96,7 +96,7 @@ export const MedicineCard = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-blue-50 transition-colors"
+                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-blue-50 transition-colors flex-shrink-0"
                 onClick={handleAddToCart}
               >
                 <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
@@ -104,11 +104,11 @@ export const MedicineCard = ({
             </div>
             <Button
               size="sm"
-              className="bg-accent hover:bg-accent/90 text-white font-medium text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 h-9 sm:h-10 rounded-full flex-grow transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
+              className="bg-accent hover:bg-accent/90 text-white font-medium text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 h-9 sm:h-10 rounded-full flex-grow transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 whitespace-nowrap flex items-center justify-center gap-2 min-w-[120px]"
               onClick={handleBuy}
             >
-              <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              Buy Now
+              <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+              <span className="flex-shrink-0">Buy Now</span>
             </Button>
           </div>
         </div>
