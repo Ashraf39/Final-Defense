@@ -27,11 +27,11 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
 
   return (
     <>
-      <div className="container mx-auto px-2 sm:px-4 mt-4 space-y-6 sm:space-y-8 bg-white rounded-lg shadow-lg border border-gray-100 p-4 sm:p-6">
+      <div className="container mx-auto px-4 mt-4 space-y-8 bg-white rounded-lg shadow-lg border border-gray-100 p-6">
         {companies.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold mb-4">Companies</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {companies.map((company) => (
                 <CompanyCard
                   key={company.uid}
@@ -46,7 +46,7 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
         {medicines.length > 0 && (
           <div className="w-full max-w-[1000px] mx-auto">
             <h3 className="text-lg font-semibold mb-4">Medicines</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 px-2 sm:px-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10 px-4">
               {medicines.map((medicine) => (
                 <SearchMedicineCard
                   key={medicine.id}
