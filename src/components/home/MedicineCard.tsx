@@ -104,7 +104,7 @@ export const MedicineCard = ({
             </div>
             <Button
               size="sm"
-              className="bg-green-600 hover:bg-green-700 text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 h-9 sm:h-10 rounded-full flex-grow transition-colors"
+              className="bg-accent hover:bg-accent/90 text-white font-medium text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 h-9 sm:h-10 rounded-full flex-grow transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
               onClick={handleBuy}
             >
               <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
