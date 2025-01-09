@@ -59,49 +59,51 @@ export const MedicineCard = ({
   return (
     <>
       <div 
-        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 border border-green-100 cursor-pointer"
+        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 border border-green-100 cursor-pointer w-full"
         onClick={() => setShowDetailsDialog(true)}
       >
         <img
           src={medicine.image || "/placeholder.svg"}
           alt={medicine.name}
-          className="w-full h-48 object-contain rounded-t-lg p-3"
+          className="w-full h-36 sm:h-48 object-contain rounded-t-lg p-2 sm:p-3"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = "/placeholder.svg";
           }}
         />
-        <div className="p-4" onClick={(e) => e.stopPropagation()}>
-          <h3 className="text-base font-medium mb-2 truncate">{medicine.name}</h3>
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">{medicine.description}</p>
-          <div className="flex justify-center mb-3">
-            <span className="text-lg font-bold text-green-600">BDT {medicine.price}</span>
+        <div className="p-2 sm:p-4" onClick={(e) => e.stopPropagation()}>
+          <h3 className="text-sm sm:text-base font-medium mb-1 sm:mb-2 truncate">{medicine.name}</h3>
+          <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2">{medicine.description}</p>
+          <div className="flex justify-center mb-2 sm:mb-3">
+            <span className="text-base sm:text-lg font-bold text-green-600">BDT {medicine.price}</span>
           </div>
-          <div className="flex justify-between gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-full hover:bg-pink-50"
-              onClick={handleLike}
-            >
-              <Heart 
-                className={`h-5 w-5 ${isLikedByUser ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
-              />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-full hover:bg-blue-50"
-              onClick={handleAddToCart}
-            >
-              <ShoppingCart className="h-5 w-5 text-gray-500" />
-            </Button>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <div className="flex gap-2 justify-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:bg-pink-50"
+                onClick={handleLike}
+              >
+                <Heart 
+                  className={`h-4 w-4 sm:h-5 sm:w-5 ${isLikedByUser ? 'fill-red-500 text-red-500' : 'text-gray-500'}`} 
+                />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:bg-blue-50"
+                onClick={handleAddToCart}
+              >
+                <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
+              </Button>
+            </div>
             <Button
               size="sm"
-              className="bg-green-600 hover:bg-green-700 text-sm px-4 py-2 h-10 rounded-full flex-grow"
+              className="bg-green-600 hover:bg-green-700 text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-2 h-8 sm:h-10 rounded-full flex-grow"
               onClick={handleBuy}
             >
-              <ShoppingBag className="h-5 w-5 mr-2" />
+              <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
               Buy
             </Button>
           </div>

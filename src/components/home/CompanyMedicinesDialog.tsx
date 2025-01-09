@@ -102,11 +102,11 @@ export const CompanyMedicinesDialog = ({
     <Dialog open={!!companyId} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <div className="py-4">
-          <h2 className="text-2xl font-bold mb-6">{companyName}'s Medicines</h2>
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">{companyName}'s Medicines</h2>
           {isLoading ? (
             <div className="text-center">Loading medicines...</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
               {medicines.map((medicine) => (
                 <MedicineCard
                   key={medicine.id}
