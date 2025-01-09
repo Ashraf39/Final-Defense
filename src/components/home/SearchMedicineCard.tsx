@@ -10,9 +10,9 @@ export const SearchMedicineCard = ({ medicine, onClick }: SearchMedicineCardProp
   return (
     <button
       onClick={onClick}
-      className="p-6 border border-green-100 rounded-lg hover:shadow-md transition-shadow bg-white text-left w-full"
+      className="p-8 border border-green-100 rounded-lg hover:shadow-md transition-shadow bg-white text-left w-full"
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
         <img
           src={getImageUrl(medicine.image)}
           alt={medicine.name}
@@ -24,7 +24,7 @@ export const SearchMedicineCard = ({ medicine, onClick }: SearchMedicineCardProp
         />
         <div>
           <h4 className="font-medium text-gray-900">{medicine.name}</h4>
-          <p className="text-sm text-gray-500 mt-1">BDT {medicine.price}</p>
+          <p className="text-sm text-gray-500 mt-2">BDT {medicine.price}</p>
         </div>
       </div>
     </button>
