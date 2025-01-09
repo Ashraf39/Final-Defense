@@ -89,7 +89,7 @@ const App = () => {
       <AuthProvider>
         <div className="min-h-screen flex flex-col">
           <Navbar />
-          <main className="flex-grow">
+          <main className="flex-grow w-full px-4 sm:px-6 lg:px-8 max-w-[2000px] mx-auto">
             <AppRoutes />
           </main>
           {!hideFooter && <Footer />}
