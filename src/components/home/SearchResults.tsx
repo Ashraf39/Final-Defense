@@ -46,7 +46,7 @@ export const SearchResults = ({ medicines, companies, isLoading }: SearchResults
         {medicines.length > 0 && (
           <div>
             <h3 className="text-lg font-semibold mb-4">Medicines</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-12 p-6">
               {medicines.map((medicine) => (
                 <SearchMedicineCard
                   key={medicine.id}

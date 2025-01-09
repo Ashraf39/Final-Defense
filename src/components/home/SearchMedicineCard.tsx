@@ -10,9 +10,9 @@ export const SearchMedicineCard = ({ medicine, onClick }: SearchMedicineCardProp
   return (
     <button
       onClick={onClick}
-      className="p-8 border border-green-100 rounded-lg hover:shadow-md transition-shadow bg-white text-left w-full"
+      className="p-10 border border-green-100 rounded-lg hover:shadow-md transition-shadow bg-white text-left w-full"
     >
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-8">
         <img
           src={getImageUrl(medicine.image)}
           alt={medicine.name}
