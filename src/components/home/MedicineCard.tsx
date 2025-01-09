@@ -59,7 +59,7 @@ export const MedicineCard = ({
   return (
     <>
       <div 
-        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 border border-green-100 cursor-pointer w-full"
+        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 border border-green-100 cursor-pointer w-full flex flex-col"
         onClick={() => setShowDetailsDialog(true)}
       >
         <img
@@ -71,13 +71,15 @@ export const MedicineCard = ({
             target.src = "/placeholder.svg";
           }}
         />
-        <div className="p-2 sm:p-4" onClick={(e) => e.stopPropagation()}>
+        <div className="p-2 sm:p-4 flex flex-col flex-grow" onClick={(e) => e.stopPropagation()}>
           <h3 className="text-sm sm:text-base font-medium mb-1 sm:mb-2 truncate">{medicine.name}</h3>
-          <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2">{medicine.description}</p>
+          <div className="min-h-[2.5rem] sm:min-h-[3rem] mb-2 sm:mb-3">
+            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{medicine.description}</p>
+          </div>
           <div className="flex justify-center mb-2 sm:mb-3">
             <span className="text-base sm:text-lg font-bold text-green-600">BDT {medicine.price}</span>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-auto">
             <div className="flex gap-2 justify-center">
               <Button
                 variant="ghost"
