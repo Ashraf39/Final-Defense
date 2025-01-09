@@ -59,32 +59,34 @@ export const MedicineCard = ({
   return (
     <>
       <div 
-        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 border border-green-100 cursor-pointer w-full flex flex-col"
+        className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-102 border border-[#D3E4FD] cursor-pointer w-full flex flex-col overflow-hidden group"
         onClick={() => setShowDetailsDialog(true)}
       >
-        <img
-          src={medicine.image || "/placeholder.svg"}
-          alt={medicine.name}
-          className="w-full h-36 sm:h-48 object-contain rounded-t-lg p-2 sm:p-3"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = "/placeholder.svg";
-          }}
-        />
-        <div className="p-2 sm:p-4 flex flex-col flex-grow" onClick={(e) => e.stopPropagation()}>
-          <h3 className="text-sm sm:text-base font-medium mb-1 sm:mb-2 truncate">{medicine.name}</h3>
-          <div className="min-h-[2.5rem] sm:min-h-[3rem] mb-2 sm:mb-3">
+        <div className="relative overflow-hidden">
+          <img
+            src={medicine.image || "/placeholder.svg"}
+            alt={medicine.name}
+            className="w-full h-36 sm:h-48 object-contain rounded-t-xl p-2 sm:p-3 bg-gradient-to-b from-[#F2FCE2] to-white transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "/placeholder.svg";
+            }}
+          />
+        </div>
+        <div className="p-4 sm:p-5 flex flex-col flex-grow bg-gradient-to-b from-white to-[#F1F0FB]/30" onClick={(e) => e.stopPropagation()}>
+          <h3 className="text-sm sm:text-base font-medium mb-2 sm:mb-3 truncate text-gray-800">{medicine.name}</h3>
+          <div className="min-h-[2.5rem] sm:min-h-[3rem] mb-3 sm:mb-4">
             <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{medicine.description}</p>
           </div>
-          <div className="flex justify-center mb-2 sm:mb-3">
-            <span className="text-base sm:text-lg font-bold text-green-600">BDT {medicine.price}</span>
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <span className="text-base sm:text-lg font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">BDT {medicine.price}</span>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-auto">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-auto">
             <div className="flex gap-2 justify-center">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:bg-pink-50"
+                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-pink-50 transition-colors"
                 onClick={handleLike}
               >
                 <Heart 
@@ -94,7 +96,7 @@ export const MedicineCard = ({
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:bg-blue-50"
+                className="h-9 w-9 sm:h-10 sm:w-10 rounded-full hover:bg-blue-50 transition-colors"
                 onClick={handleAddToCart}
               >
                 <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-gray-500" />
@@ -102,11 +104,11 @@ export const MedicineCard = ({
             </div>
             <Button
               size="sm"
-              className="bg-green-600 hover:bg-green-700 text-xs sm:text-sm px-3 sm:px-4 py-1 sm:py-2 h-8 sm:h-10 rounded-full flex-grow"
+              className="bg-green-600 hover:bg-green-700 text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 h-9 sm:h-10 rounded-full flex-grow transition-colors"
               onClick={handleBuy}
             >
-              <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-              Buy
+              <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+              Buy Now
             </Button>
           </div>
         </div>
