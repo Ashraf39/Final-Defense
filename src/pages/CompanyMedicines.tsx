@@ -121,18 +121,20 @@ export const CompanyMedicines = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-6">Company Medicines</h1>
-      <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
-        {medicines.map((medicine) => (
-          <MedicineCard
-            key={medicine.id}
-            medicine={medicine}
-            onLike={handleLike}
-            onAddToCart={handleAddToCart}
-            onBuy={handleBuy}
-          />
-        ))}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-8 text-center">Company Medicines</h1>
+      <div className="w-full max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 p-8">
+          {medicines.map((medicine) => (
+            <MedicineCard
+              key={medicine.id}
+              medicine={medicine}
+              onLike={handleLike}
+              onAddToCart={handleAddToCart}
+              onBuy={handleBuy}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
