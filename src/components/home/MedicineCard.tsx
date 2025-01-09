@@ -59,14 +59,14 @@ export const MedicineCard = ({
   return (
     <>
       <div 
-        className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-[#D3E4FD] cursor-pointer w-full min-w-[280px] flex flex-col overflow-hidden group"
+        className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-[#D3E4FD] cursor-pointer w-full min-w-[266px] flex flex-col overflow-hidden group"
         onClick={() => setShowDetailsDialog(true)}
       >
         <div className="relative overflow-hidden">
           <img
             src={medicine.image || "/placeholder.svg"}
             alt={medicine.name}
-            className="w-full h-36 sm:h-48 object-contain rounded-t-xl p-2 sm:p-3 bg-gradient-to-b from-[#F2FCE2] to-white transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-[34px] sm:h-[45px] object-contain rounded-t-xl p-2 sm:p-3 bg-gradient-to-b from-[#F2FCE2] to-white transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = "/placeholder.svg";
