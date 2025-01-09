@@ -43,18 +43,20 @@ export const FavoritesSection = ({
   };
 
   return (
-    <section className="container mx-auto px-4">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Your Favorites</h2>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {likedMedicines.map((medicine) => (
-          <MedicineCard
-            key={medicine.id}
-            medicine={medicine}
-            onLike={onLike}
-            onAddToCart={onAddToCart}
-            onBuy={handleBuy}
-          />
-        ))}
+    <section className="container mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Your Favorites</h2>
+      <div className="w-full max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 p-8">
+          {likedMedicines.map((medicine) => (
+            <MedicineCard
+              key={medicine.id}
+              medicine={medicine}
+              onLike={onLike}
+              onAddToCart={onAddToCart}
+              onBuy={handleBuy}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
