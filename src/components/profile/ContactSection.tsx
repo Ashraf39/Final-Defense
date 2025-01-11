@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ContactSectionProps {
   email: string;
@@ -10,6 +12,33 @@ interface ContactSectionProps {
 }
 
 export const ContactSection = ({ email, phoneNumber, address, onChange }: ContactSectionProps) => {
+  const { toast } = useToast();
+  const [localPhoneNumber, setLocalPhoneNumber] = useState(phoneNumber.replace("+88", ""));
+
+  const validatePhoneNumber = (phone: string) => {
+    const phoneRegex = /^\d{11}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 11) {
+      setLocalPhoneNumber(value);
+      
+      if (value.length === 11) {
+        if (validatePhoneNumber(value)) {
+          onChange("phoneNumber", `+88${value}`);
+        } else {
+          toast({
+            title: "Invalid phone number",
+            description: "Phone number must be exactly 11 digits",
+            variant: "destructive",
+          });
+        }
+      }
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="space-y-2">
@@ -32,14 +61,18 @@ export const ContactSection = ({ email, phoneNumber, address, onChange }: Contac
           <Phone className="h-4 w-4" />
           Phone Number
         </Label>
-        <Input
-          id="phoneNumber"
-          name="phoneNumber"
-          type="tel"
-          placeholder="Enter your phone number"
-          value={phoneNumber}
-          onChange={(e) => onChange("phoneNumber", e.target.value)}
-        />
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">+88</span>
+          <Input
+            id="phoneNumber"
+            name="phoneNumber"
+            type="tel"
+            className="pl-12"
+            placeholder="Enter 11 digits"
+            value={localPhoneNumber}
+            onChange={handlePhoneNumberChange}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
