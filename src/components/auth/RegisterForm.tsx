@@ -3,11 +3,11 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import type { UserData } from "@/types/user";
+import { RoleSelector } from "./RoleSelector";
+import { BasicInfoFields } from "./BasicInfoFields";
+import { CompanyFields } from "./CompanyFields";
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -118,114 +118,14 @@ export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterForm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <RadioGroup
-        defaultValue="regular"
-        value={role}
-        onValueChange={(value) => setRole(value as "regular" | "company")}
-        className="flex gap-4"
-      >
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="regular" id="regular" />
-          <Label htmlFor="regular">Regular User</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value="company" id="company" />
-          <Label htmlFor="company">Company</Label>
-        </div>
-      </RadioGroup>
+      <RoleSelector value={role} onChange={(value) => setRole(value as "regular" | "company")} />
+      
+      <BasicInfoFields
+        phoneNumber={phoneNumber}
+        onPhoneNumberChange={handlePhoneNumberChange}
+      />
 
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          name="email"
-          type="email"
-          required
-          placeholder="Enter your email"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          name="password"
-          type="password"
-          required
-          placeholder="Create a password"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="displayName">Full Name</Label>
-        <Input
-          id="displayName"
-          name="displayName"
-          required
-          placeholder="Enter your full name"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="phoneNumber">Phone Number</Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">+88</span>
-          <Input
-            id="phoneNumber"
-            name="phoneNumber"
-            type="tel"
-            required
-            value={phoneNumber}
-            onChange={handlePhoneNumberChange}
-            className="pl-12"
-            placeholder="Enter 11 digits"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="address">Address</Label>
-        <Input
-          id="address"
-          name="address"
-          required
-          placeholder="Enter your address"
-        />
-      </div>
-
-      {role === "company" && (
-        <>
-          <div className="space-y-2">
-            <Label htmlFor="companyName">Company Name</Label>
-            <Input
-              id="companyName"
-              name="companyName"
-              required
-              placeholder="Enter company name"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="companyDescription">Company Description</Label>
-            <Input
-              id="companyDescription"
-              name="companyDescription"
-              required
-              placeholder="Enter company description"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="companyLicense">License Number</Label>
-            <Input
-              id="companyLicense"
-              name="companyLicense"
-              required
-              placeholder="Enter company license number"
-            />
-          </div>
-        </>
-      )}
+      {role === "company" && <CompanyFields />}
 
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? "Creating account..." : "Register"}
