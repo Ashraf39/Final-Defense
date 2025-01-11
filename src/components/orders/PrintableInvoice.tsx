@@ -7,7 +7,7 @@ interface PrintableInvoiceProps {
 }
 
 export const PrintableInvoice = ({ order, companyMedicineIds }: PrintableInvoiceProps) => {
-  // Filter items to only show medicines belonging to the company
+  // Filter items to only show medicines belonging to the company if companyMedicineIds is provided
   const displayItems = companyMedicineIds 
     ? order.items.filter((item) => companyMedicineIds.includes(item.medicineId))
     : order.items;
@@ -15,30 +15,35 @@ export const PrintableInvoice = ({ order, companyMedicineIds }: PrintableInvoice
   return (
     <div className="p-8 bg-white" id="printable-invoice">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold mb-2">{order.companyInfo?.companyName || "INVOICE"}</h1>
-        {order.companyInfo && (
-          <div className="text-gray-600 mb-4">
-            <p>{order.companyInfo.address}</p>
-            <p>Phone: {order.companyInfo.phoneNumber}</p>
-            <p>Email: {order.companyInfo.email}</p>
-            {order.companyInfo.companyLicense && (
-              <p>License No: {order.companyInfo.companyLicense}</p>
-            )}
-          </div>
-        )}
-        <div className="text-gray-600 mt-4">
+        <h1 className="text-2xl font-bold mb-2">INVOICE</h1>
+        <div className="text-gray-600 mb-4">
           <p>Invoice #{order.invoiceNumber}</p>
           <p>{format(order.createdAt, "PPpp")}</p>
         </div>
       </div>
 
+      {order.companyInfo && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-2">Company Information</h2>
+          <div className="space-y-1">
+            <p><span className="font-medium">Company:</span> {order.companyInfo.companyName}</p>
+            <p><span className="font-medium">Address:</span> {order.companyInfo.address}</p>
+            <p><span className="font-medium">Phone:</span> {order.companyInfo.phoneNumber}</p>
+            <p><span className="font-medium">Email:</span> {order.companyInfo.email}</p>
+            {order.companyInfo.companyLicense && (
+              <p><span className="font-medium">License No:</span> {order.companyInfo.companyLicense}</p>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-2">Customer Information</h2>
         <div className="space-y-1">
-          <p>Name: {order.customerInfo.displayName}</p>
-          <p>Email: {order.customerInfo.email}</p>
-          <p>Phone: {order.customerInfo.phoneNumber}</p>
-          <p>Address: {order.customerInfo.address}</p>
+          <p><span className="font-medium">Name:</span> {order.customerInfo.displayName}</p>
+          <p><span className="font-medium">Email:</span> {order.customerInfo.email}</p>
+          <p><span className="font-medium">Phone:</span> {order.customerInfo.phoneNumber}</p>
+          <p><span className="font-medium">Address:</span> {order.customerInfo.address}</p>
         </div>
       </div>
 
@@ -74,14 +79,16 @@ export const PrintableInvoice = ({ order, companyMedicineIds }: PrintableInvoice
 
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-2">Payment Information</h2>
-        <p>Method: {order.paymentMethod} {order.mobileMethod && `(${order.mobileMethod})`}</p>
-        {order.bankDetails && (
-          <div className="mt-2">
-            <p>Bank: {order.bankDetails.bankName}</p>
-            <p>Account: {order.bankDetails.accountNumber}</p>
-            <p>Transaction ID: {order.bankDetails.transactionId}</p>
-          </div>
-        )}
+        <div className="space-y-1">
+          <p><span className="font-medium">Method:</span> {order.paymentMethod} {order.mobileMethod && `(${order.mobileMethod})`}</p>
+          {order.bankDetails && (
+            <>
+              <p><span className="font-medium">Bank:</span> {order.bankDetails.bankName}</p>
+              <p><span className="font-medium">Account:</span> {order.bankDetails.accountNumber}</p>
+              <p><span className="font-medium">Transaction ID:</span> {order.bankDetails.transactionId}</p>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
