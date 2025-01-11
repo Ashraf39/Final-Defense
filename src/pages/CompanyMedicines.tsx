@@ -109,15 +109,17 @@ export const CompanyMedicines = () => {
         {companyName}'s Medicines
       </h1>
       <div className="w-full max-w-[1000px] mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-10 px-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-16 px-4">
           {medicines.map((medicine) => (
-            <MedicineCard
-              key={medicine.id}
-              medicine={medicine}
-              onLike={handleLike}
-              onAddToCart={handleAddToCart}
-              onBuy={handleBuy}
-            />
+            <div className="transform scale-80">
+              <MedicineCard
+                key={medicine.id}
+                medicine={medicine}
+                onLike={handleLike}
+                onAddToCart={handleAddToCart}
+                onBuy={handleBuy}
+              />
+            </div>
           ))}
         </div>
       </div>
