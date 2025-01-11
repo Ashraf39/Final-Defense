@@ -3,20 +3,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Medicine } from "@/types/medicine";
 import { UserData } from "@/types/user";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { CompanyMedicinesCard } from "./medicines/CompanyMedicinesCard";
 
 export const MedicinesList = () => {
   // Fetch all medicines
@@ -66,46 +53,11 @@ export const MedicinesList = () => {
       <h2 className="text-2xl font-bold">All Medicines</h2>
       
       {companies?.map((company) => (
-        <Card key={company.uid}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              <img
-                src={company.companyLogo || "/placeholder.svg"}
-                alt={company.companyName}
-                className="w-8 h-8 rounded-full"
-              />
-              {company.companyName}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Medicine Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Stock</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {medicinesByCompany?.[company.uid]?.map((medicine) => (
-                  <TableRow key={medicine.id}>
-                    <TableCell className="font-medium">{medicine.name}</TableCell>
-                    <TableCell>{medicine.description}</TableCell>
-                    <TableCell>BDT {medicine.price}</TableCell>
-                    <TableCell>{medicine.stock} box{medicine.stock === 1 ? '' : 'es'}</TableCell>
-                  </TableRow>
-                )) || (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
-                      No medicines found for this company
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <CompanyMedicinesCard
+          key={company.uid}
+          company={company}
+          medicines={medicinesByCompany?.[company.uid] || []}
+        />
       ))}
     </div>
   );
