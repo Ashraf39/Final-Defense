@@ -15,9 +15,21 @@ export const PrintableInvoice = ({ order, companyMedicineIds }: PrintableInvoice
   return (
     <div className="p-8 bg-white" id="printable-invoice">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold">INVOICE</h1>
-        <p className="text-gray-600">#{order.invoiceNumber}</p>
-        <p className="text-gray-600">{format(order.createdAt, "PPpp")}</p>
+        <h1 className="text-2xl font-bold mb-2">{order.companyInfo?.companyName || "INVOICE"}</h1>
+        {order.companyInfo && (
+          <div className="text-gray-600 mb-4">
+            <p>{order.companyInfo.address}</p>
+            <p>Phone: {order.companyInfo.phoneNumber}</p>
+            <p>Email: {order.companyInfo.email}</p>
+            {order.companyInfo.companyLicense && (
+              <p>License No: {order.companyInfo.companyLicense}</p>
+            )}
+          </div>
+        )}
+        <div className="text-gray-600 mt-4">
+          <p>Invoice #{order.invoiceNumber}</p>
+          <p>{format(order.createdAt, "PPpp")}</p>
+        </div>
       </div>
 
       <div className="mb-8">
