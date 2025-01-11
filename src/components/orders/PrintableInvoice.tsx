@@ -45,16 +45,16 @@ export const PrintableInvoice = ({ order, companyMedicineIds }: PrintableInvoice
             {displayItems.map((item, index) => (
               <tr key={index} className="border-b">
                 <td className="py-2">{item.name}</td>
-                <td className="text-right py-2">{item.quantity}</td>
-                <td className="text-right py-2">${item.price.toFixed(2)}</td>
-                <td className="text-right py-2">${(item.price * item.quantity).toFixed(2)}</td>
+                <td className="text-right py-2">{item.quantity} box{item.quantity === 1 ? '' : 'es'}</td>
+                <td className="text-right py-2">BDT {item.price.toFixed(2)}</td>
+                <td className="text-right py-2">BDT {(item.price * item.quantity).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr>
               <td colSpan={3} className="text-right py-2 font-semibold">Total:</td>
-              <td className="text-right py-2 font-semibold">${order.total.toFixed(2)}</td>
+              <td className="text-right py-2 font-semibold">BDT {order.total.toFixed(2)}</td>
             </tr>
           </tfoot>
         </table>
