@@ -30,7 +30,7 @@ export const CartItem = ({
         />
         <div>
           <h3 className="font-medium">{name}</h3>
-          <p className="text-gray-600">${price.toFixed(2)}</p>
+          <p className="text-gray-600">BDT {price.toFixed(2)}</p>
         </div>
       </div>
       

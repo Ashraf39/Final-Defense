@@ -24,7 +24,7 @@ export const CartSummary = ({ total, items }: CartSummaryProps) => {
       <div className="flex justify-between items-center mb-4">
         <span className="font-medium">Total:</span>
         <span className="text-xl font-bold">
-          ${total.toFixed(2)}
+          BDT {total.toFixed(2)}
         </span>
       </div>
       <div className="flex justify-end space-x-4">
