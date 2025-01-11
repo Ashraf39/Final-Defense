@@ -24,7 +24,7 @@ export const SearchMedicineCard = ({ medicine, onClick }: SearchMedicineCardProp
         />
         <div>
           <h4 className="font-medium text-gray-900 text-center sm:text-left">{medicine.name}</h4>
-          <p className="text-sm text-gray-500 mt-0.5 text-center sm:text-left">BDT {medicine.price}</p>
+          <p className="text-sm text-gray-500 mt-0.5 text-center sm:text-left">BDT {medicine.price} per box</p>
         </div>
       </div>
     </button>

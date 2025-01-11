@@ -15,7 +15,7 @@ export const MedicineDetails = ({ name, description, price }: MedicineDetailsPro
       </div>
       <div className="flex justify-center mb-3 sm:mb-4">
         <span className="text-base sm:text-lg font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full">
-          BDT {price}
+          BDT {price} per box
         </span>
       </div>
     </>
