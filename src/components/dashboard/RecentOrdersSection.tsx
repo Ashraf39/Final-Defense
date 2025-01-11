@@ -8,7 +8,6 @@ interface RecentOrdersSectionProps {
 export const RecentOrdersSection = ({ orders }: RecentOrdersSectionProps) => {
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-4">Recent Orders</h2>
       <RecentOrders orders={orders} />
     </div>
   );
