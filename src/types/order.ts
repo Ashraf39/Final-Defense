@@ -25,5 +25,12 @@ export interface Order {
     phoneNumber: string;
     address: string;
   };
+  companyInfo?: {
+    companyName: string;
+    address: string;
+    phoneNumber: string;
+    email: string;
+    companyLicense?: string;
+  };
   invoiceNumber: string;
 }
