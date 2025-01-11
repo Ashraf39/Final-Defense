@@ -143,7 +143,7 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold mb-2">{medicine.name}</h2>
-                <p className="text-xl font-bold text-primary">BDT {medicine.price}</p>
+                <p className="text-xl font-bold text-primary">BDT {medicine.price} per box</p>
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Description</h3>
@@ -151,7 +151,7 @@ export const MedicineDetailsDialog = ({ medicine, isOpen, onClose }: MedicineDet
               </div>
               <div>
                 <h3 className="text-lg font-semibold mb-2">Stock</h3>
-                <p className="text-gray-600">{medicine.stock} units available</p>
+                <p className="text-gray-600">{medicine.stock} box{medicine.stock === 1 ? '' : 'es'} available</p>
               </div>
               {userRole === "regular" || !userRole ? (
                 <MedicineActionButtons
