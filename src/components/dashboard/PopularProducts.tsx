@@ -41,7 +41,7 @@ export const PopularProducts = ({ products }: PopularProductsProps) => {
                   <div>
                     <p className="font-medium">{product.name}</p>
                     <p className="text-sm text-muted-foreground">
-                      {product.sales || 0} units sold
+                      {product.sales || 0} box{(product.sales || 0) === 1 ? '' : 'es'} sold
                     </p>
                   </div>
                   <Button 
