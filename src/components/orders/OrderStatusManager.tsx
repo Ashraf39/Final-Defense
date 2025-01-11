@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { updateOrderStatus, processOrder } from "@/lib/orders";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface OrderStatusManagerProps {
   orderId: string;
@@ -21,6 +22,7 @@ export const OrderStatusManager = ({ orderId, currentStatus, isCompany }: OrderS
   const [status, setStatus] = useState(currentStatus);
   const [isUpdating, setIsUpdating] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleStatusUpdate = async (newStatus: string) => {
     setIsUpdating(true);
@@ -31,6 +33,12 @@ export const OrderStatusManager = ({ orderId, currentStatus, isCompany }: OrderS
         await updateOrderStatus(orderId, newStatus);
       }
       setStatus(newStatus);
+      
+      // Invalidate dashboard data when status changes to delivered
+      if (newStatus === "delivered") {
+        queryClient.invalidateQueries({ queryKey: ['dashboardData'] });
+      }
+      
       toast({
         title: "Order status updated",
         description: `Order status has been changed to ${newStatus}`,
