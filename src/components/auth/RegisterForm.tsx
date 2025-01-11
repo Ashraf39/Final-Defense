@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import type { UserData } from "@/types/user";
 
 interface RegisterFormProps {
@@ -23,6 +23,12 @@ export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterForm
   const validatePhoneNumber = (phone: string) => {
     const phoneRegex = /^\d{11}$/;
     return phoneRegex.test(phone);
+  };
+
+  const validatePassword = (password: string) => {
+    const hasLetter = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    return password.length >= 6 && hasLetter && hasNumber;
   };
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,10 +61,10 @@ export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterForm
       return;
     }
 
-    if (password.length < 6) {
+    if (!validatePassword(password)) {
       toast({
         title: "Invalid password",
-        description: "Password must be at least 6 characters long",
+        description: "Password must be at least 6 characters long and contain both letters and numbers",
         variant: "destructive",
       });
       setIsLoading(false);
