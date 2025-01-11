@@ -37,7 +37,7 @@ export const PrintableInvoice = ({ order, companyMedicineIds }: PrintableInvoice
             <tr className="border-b">
               <th className="text-left py-2">Item</th>
               <th className="text-right py-2">Quantity</th>
-              <th className="text-right py-2">Price</th>
+              <th className="text-right py-2">Price (per box)</th>
               <th className="text-right py-2">Total</th>
             </tr>
           </thead>
