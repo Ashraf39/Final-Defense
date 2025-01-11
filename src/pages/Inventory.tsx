@@ -137,8 +137,8 @@ export const Inventory = () => {
                 <TableCell className="max-w-xs truncate">
                   {medicine.description}
                 </TableCell>
-                <TableCell>${medicine.price}</TableCell>
-                <TableCell>{medicine.stock}</TableCell>
+                <TableCell>BDT {medicine.price} per box</TableCell>
+                <TableCell>{medicine.stock} box{medicine.stock === 1 ? '' : 'es'}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <Button
