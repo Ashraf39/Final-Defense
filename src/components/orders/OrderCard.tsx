@@ -8,8 +8,7 @@ import { CustomerInfo } from "./CustomerInfo";
 import { OrderItems } from "./OrderItems";
 import { PaymentDetails } from "./PaymentDetails";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { fetchCompanyInfo, CompanyInfo } from "@/lib/company";
 
 interface OrderCardProps {
   order: Order;
@@ -19,34 +18,21 @@ interface OrderCardProps {
 
 export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardProps) => {
   const { toast } = useToast();
-  const [companyInfo, setCompanyInfo] = useState(order.companyInfo);
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo | null>(order.companyInfo || null);
   
   useEffect(() => {
-    const fetchCompanyInfo = async () => {
-      // Get the first item's companyId
+    const getCompanyInfo = async () => {
       const firstItem = order.items[0];
       if (!firstItem?.companyId) return;
       
-      try {
-        const companyDoc = await getDoc(doc(db, "users", firstItem.companyId));
-        if (companyDoc.exists()) {
-          const data = companyDoc.data();
-          const companyInfo = {
-            companyName: data.companyName || "",
-            address: data.address || "",
-            phoneNumber: data.phoneNumber || "",
-            email: data.email || "",
-            companyLicense: data.companyLicense || ""
-          };
-          setCompanyInfo(companyInfo);
-        }
-      } catch (error) {
-        console.error("Error fetching company info:", error);
+      const info = await fetchCompanyInfo(firstItem.companyId);
+      if (info) {
+        setCompanyInfo(info);
       }
     };
 
     if (!order.companyInfo) {
-      fetchCompanyInfo();
+      getCompanyInfo();
     }
   }, [order]);
   
