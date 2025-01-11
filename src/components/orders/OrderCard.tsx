@@ -108,7 +108,7 @@ export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardPro
                 <p className="font-medium">{item.name}</p>
                 <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
               </div>
-              <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+              <p className="font-medium">BDT {(item.price * item.quantity).toFixed(2)}</p>
             </div>
           ))}
         </div>
@@ -132,7 +132,7 @@ export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardPro
             <div className="text-right">
               <p className="text-sm text-gray-600">Total Amount</p>
               <p className="font-semibold">
-                ${order.total.toFixed(2)}
+                BDT {order.total.toFixed(2)}
               </p>
             </div>
           </div>
