@@ -93,7 +93,7 @@ export const MedicinesList = () => {
                     <TableCell className="font-medium">{medicine.name}</TableCell>
                     <TableCell>{medicine.description}</TableCell>
                     <TableCell>BDT {medicine.price}</TableCell>
-                    <TableCell>{medicine.stock}</TableCell>
+                    <TableCell>{medicine.stock} box{medicine.stock === 1 ? '' : 'es'}</TableCell>
                   </TableRow>
                 )) || (
                   <TableRow>
