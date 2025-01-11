@@ -1,5 +1,6 @@
 export interface OrderItem {
   medicineId: string;
+  companyId: string;
   name: string;
   quantity: number;
   price: number;

@@ -7,6 +7,9 @@ import { OrderHeader } from "./OrderHeader";
 import { CustomerInfo } from "./CustomerInfo";
 import { OrderItems } from "./OrderItems";
 import { PaymentDetails } from "./PaymentDetails";
+import { useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 interface OrderCardProps {
   order: Order;
@@ -16,6 +19,33 @@ interface OrderCardProps {
 
 export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardProps) => {
   const { toast } = useToast();
+  const [companyInfo, setCompanyInfo] = useState(order.companyInfo);
+  
+  useEffect(() => {
+    const fetchCompanyInfo = async () => {
+      if (!order.items[0]?.companyId) return;
+      
+      try {
+        const companyDoc = await getDoc(doc(db, "users", order.items[0].companyId));
+        if (companyDoc.exists()) {
+          const data = companyDoc.data();
+          setCompanyInfo({
+            companyName: data.companyName,
+            address: data.address,
+            phoneNumber: data.phoneNumber,
+            email: data.email,
+            companyLicense: data.companyLicense
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching company info:", error);
+      }
+    };
+
+    if (!order.companyInfo) {
+      fetchCompanyInfo();
+    }
+  }, [order]);
   
   const displayItems = isCompany
     ? order.items.filter((item) => companyMedicineIds?.includes(item.medicineId))
@@ -51,6 +81,11 @@ export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardPro
     }
   };
 
+  const orderWithCompanyInfo = {
+    ...order,
+    companyInfo: companyInfo
+  };
+
   return (
     <>
       <Card className="p-6">
@@ -84,7 +119,10 @@ export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardPro
       </Card>
 
       <div className="hidden">
-        <PrintableInvoice order={order} companyMedicineIds={companyMedicineIds} />
+        <PrintableInvoice 
+          order={orderWithCompanyInfo} 
+          companyMedicineIds={companyMedicineIds} 
+        />
       </div>
     </>
   );
