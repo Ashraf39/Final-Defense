@@ -47,7 +47,7 @@ export const OrderHeader = ({
             Print Invoice
           </Button>
         )}
-        {!isCompany && currentStatus !== "cancelled" && (
+        {!isCompany && currentStatus !== "cancelled" && currentStatus !== "delivered" && (
           <Button
             variant="destructive"
             size="sm"
