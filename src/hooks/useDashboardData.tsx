@@ -76,8 +76,10 @@ export const useDashboardData = (userId: string) => {
           .map(order => order.userId);
         const activeCustomers = new Set(recentCustomers).size;
 
-        // Calculate pending orders
-        const allPendingOrders = recentOrdersData.filter(order => order.status === "pending");
+        // Calculate pending orders (all orders except delivered and cancelled)
+        const pendingOrders = recentOrdersData.filter(
+          order => order.status !== "delivered" && order.status !== "cancelled"
+        ).length;
 
         // Calculate top sold medicines
         const medicinesSalesMap = new Map<string, number>();
@@ -104,7 +106,7 @@ export const useDashboardData = (userId: string) => {
           totalProducts,
           monthlySales,
           activeCustomers,
-          pendingOrders: allPendingOrders.length
+          pendingOrders
         });
         setPopularProducts(topSoldMedicines);
 
