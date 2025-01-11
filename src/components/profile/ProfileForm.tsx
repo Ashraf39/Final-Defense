@@ -27,17 +27,33 @@ export const ProfileForm = ({ initialData }: ProfileFormProps) => {
   const [userData, setUserData] = useState({
     displayName: initialData.displayName || "",
     email: initialData.email,
-    phoneNumber: initialData.phoneNumber || "",
+    phoneNumber: initialData.phoneNumber?.replace("+88", "") || "",
     address: initialData.address || "",
     profileImage: initialData.profileImage || "",
     newPassword: "",
     confirmPassword: "",
   });
 
+  const validatePhoneNumber = (phone: string) => {
+    const phoneRegex = /^\d{11}$/;
+    return phoneRegex.test(phone);
+  };
+
   const handleInputChange = (name: string, value: string) => {
-    setUserData((prev) => ({
+    if (name === "phoneNumber") {
+      const numericValue = value.replace(/\D/g, '');
+      if (numericValue.length <= 11) {
+        setUserData(prev => ({
+          ...prev,
+          [name]: numericValue
+        }));
+      }
+      return;
+    }
+
+    setUserData(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -45,15 +61,22 @@ export const ProfileForm = ({ initialData }: ProfileFormProps) => {
     e.preventDefault();
     if (!user) return;
 
+    if (!validatePhoneNumber(userData.phoneNumber)) {
+      toast({
+        title: "Invalid phone number",
+        description: "Phone number must be exactly 11 digits",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const userRef = doc(db, "users", user.uid);
       
       await updateDoc(userRef, {
-        displayName: userData.displayName,
-        phoneNumber: userData.phoneNumber,
-        address: userData.address,
-        profileImage: userData.profileImage,
+        ...userData,
+        phoneNumber: `+88${userData.phoneNumber}`,
         updatedAt: new Date(),
       });
 
@@ -76,13 +99,6 @@ export const ProfileForm = ({ initialData }: ProfileFormProps) => {
         title: "Profile updated successfully",
         duration: 2000,
       });
-
-      setUserData(prev => ({
-        ...prev,
-        newPassword: "",
-        confirmPassword: "",
-      }));
-
     } catch (error: any) {
       toast({
         title: "Error updating profile",
@@ -114,6 +130,25 @@ export const ProfileForm = ({ initialData }: ProfileFormProps) => {
           value={userData.displayName}
           onChange={(e) => handleInputChange("displayName", e.target.value)}
         />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="phoneNumber" className="flex items-center gap-2">
+          <Phone className="h-4 w-4" />
+          Phone Number
+        </Label>
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">+88</span>
+          <Input
+            id="phoneNumber"
+            name="phoneNumber"
+            type="tel"
+            value={userData.phoneNumber}
+            onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+            className="pl-12"
+            placeholder="Enter 11 digits"
+          />
+        </div>
       </div>
 
       <ContactSection

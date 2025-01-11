@@ -18,10 +18,18 @@ export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterForm
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [role, setRole] = useState<"regular" | "company">("regular");
+  const [phoneNumber, setPhoneNumber] = useState("");
 
   const validatePhoneNumber = (phone: string) => {
     const phoneRegex = /^\d{11}$/;
     return phoneRegex.test(phone);
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    if (value.length <= 11) {
+      setPhoneNumber(value);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,7 +40,6 @@ export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterForm
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const displayName = formData.get("displayName") as string;
-    const phoneNumber = formData.get("phoneNumber") as string;
     const address = formData.get("address") as string;
     const companyName = role === "company" ? formData.get("companyName") as string : undefined;
     const companyDescription = role === "company" ? formData.get("companyDescription") as string : undefined;
@@ -66,7 +73,7 @@ export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterForm
         email,
         role,
         displayName,
-        phoneNumber,
+        phoneNumber: `+88${phoneNumber}`,
         address,
         profileImage: "",
         ...(role === "company" && {
@@ -85,10 +92,8 @@ export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterForm
         description: "Please login with your credentials.",
       });
 
-      // Sign out the user after registration
       await auth.signOut();
       
-      // Notify parent component to switch to login tab with the registered email
       if (onRegistrationComplete) {
         onRegistrationComplete(email);
       }
@@ -157,13 +162,19 @@ export const RegisterForm = ({ onSuccess, onRegistrationComplete }: RegisterForm
 
       <div className="space-y-2">
         <Label htmlFor="phoneNumber">Phone Number</Label>
-        <Input
-          id="phoneNumber"
-          name="phoneNumber"
-          type="tel"
-          required
-          placeholder="Enter your phone number"
-        />
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">+88</span>
+          <Input
+            id="phoneNumber"
+            name="phoneNumber"
+            type="tel"
+            required
+            value={phoneNumber}
+            onChange={handlePhoneNumberChange}
+            className="pl-12"
+            placeholder="Enter 11 digits"
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
