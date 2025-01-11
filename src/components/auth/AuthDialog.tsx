@@ -26,8 +26,8 @@ export const AuthDialog = ({ isOpen, onClose, defaultTab = "login" }: AuthDialog
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] p-0">
+        <DialogHeader className="px-6 pt-6">
           <DialogTitle className="text-center text-2xl font-bold">
             Welcome to PharmaCare
           </DialogTitle>
@@ -39,7 +39,7 @@ export const AuthDialog = ({ isOpen, onClose, defaultTab = "login" }: AuthDialog
             <TabsTrigger value="register">Register</TabsTrigger>
           </TabsList>
           
-          <ScrollArea className="h-[60vh]">
+          <ScrollArea className="h-[60vh] px-6 py-4">
             <TabsContent value="login" className="mt-4">
               <LoginForm onSuccess={onClose} defaultEmail={registeredEmail} />
             </TabsContent>
