@@ -34,9 +34,9 @@ export const AuthDialog = ({ isOpen, onClose, defaultTab = "login" }: AuthDialog
         </DialogHeader>
         
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
-            <TabsTrigger value="register">Register</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="login" className="mx-2">Login</TabsTrigger>
+            <TabsTrigger value="register" className="mx-2">Register</TabsTrigger>
           </TabsList>
           
           <ScrollArea className="h-[60vh] px-6 py-4">
