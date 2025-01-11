@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface BasicInfoFieldsProps {
   phoneNumber: string;
@@ -29,6 +30,15 @@ export const BasicInfoFields = ({ phoneNumber, onPhoneNumberChange }: BasicInfoF
           required
           placeholder="Create a password"
         />
+        <Alert variant="default" className="bg-muted/50">
+          <AlertDescription className="text-sm text-muted-foreground">
+            Password must:
+            <ul className="list-disc list-inside mt-1">
+              <li>Be at least 6 characters long</li>
+              <li>Contain both letters and numbers</li>
+            </ul>
+          </AlertDescription>
+        </Alert>
       </div>
 
       <div className="space-y-2">
