@@ -6,7 +6,7 @@ export interface CompanyInfo {
   address: string;
   phoneNumber: string;
   email: string;
-  companyLicense: string;
+  companyLicense?: string;  // Made optional with '?'
 }
 
 export const fetchCompanyInfo = async (companyId: string): Promise<CompanyInfo | null> => {
