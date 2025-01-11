@@ -46,7 +46,7 @@ export const FavoritesSection = ({
     <section className="container mx-auto px-4 py-8">
       <h2 className="text-2xl font-bold mb-8 text-center text-gray-800">Your Favorites</h2>
       <div className="w-full max-w-[1000px] mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-16 px-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-20 px-4">
           {likedMedicines.map((medicine) => (
             <div className="transform scale-70 m-4">
               <MedicineCard

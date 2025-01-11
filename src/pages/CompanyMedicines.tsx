@@ -109,7 +109,7 @@ export const CompanyMedicines = () => {
         {companyName}'s Medicines
       </h1>
       <div className="w-full max-w-[1000px] mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-16 px-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-20 px-4">
           {medicines.map((medicine) => (
             <div className="transform scale-70 m-4">
               <MedicineCard
