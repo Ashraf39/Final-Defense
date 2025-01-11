@@ -17,6 +17,7 @@ export interface Order {
   userId: string;
   items: {
     medicineId: string;
+    companyId: string;
     name: string;
     quantity: number;
     price: number;
@@ -36,6 +37,13 @@ export interface Order {
     email: string;
     phoneNumber: string;
     address: string;
+  };
+  companyInfo?: {
+    companyName: string;
+    address: string;
+    phoneNumber: string;
+    email: string;
+    companyLicense?: string;
   };
   invoiceNumber: string;
 }
