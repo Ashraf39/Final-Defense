@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { User, Phone } from "lucide-react";
+import { User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProfileImageSection } from "./ProfileImageSection";
 import { ContactSection } from "./ContactSection";
@@ -132,25 +132,6 @@ export const ProfileForm = ({ initialData }: ProfileFormProps) => {
           value={userData.displayName}
           onChange={(e) => handleInputChange("displayName", e.target.value)}
         />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="phoneNumber" className="flex items-center gap-2">
-          <Phone className="h-4 w-4" />
-          Phone Number
-        </Label>
-        <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">+88</span>
-          <Input
-            id="phoneNumber"
-            name="phoneNumber"
-            type="tel"
-            value={userData.phoneNumber}
-            onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
-            className="pl-12"
-            placeholder="Enter 11 digits"
-          />
-        </div>
       </div>
 
       <ContactSection
