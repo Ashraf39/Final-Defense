@@ -59,7 +59,7 @@ export const CompanyDashboard = () => {
           },
           {
             title: "Monthly Sales",
-            value: `$${dashboardData.monthlySales.toFixed(2)}`,
+            value: `BDT ${dashboardData.monthlySales.toFixed(2)}`,
             description: "Revenue in last 30 days",
             icon: "TrendingUp"
           },
