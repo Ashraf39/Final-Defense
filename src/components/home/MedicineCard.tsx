@@ -48,7 +48,7 @@ export const MedicineCard = ({
   return (
     <>
       <div 
-        className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-[#D3E4FD] cursor-pointer w-full min-w-[266px] flex flex-col overflow-hidden group"
+        className="bg-white/80 backdrop-blur-sm rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 transform hover:scale-105 border border-[#D3E4FD] cursor-pointer w-[186px] min-w-[186px] flex flex-col overflow-hidden group"
         onClick={() => setShowDetailsDialog(true)}
       >
         <MedicineImage image={medicine.image} name={medicine.name} />
