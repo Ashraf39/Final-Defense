@@ -71,21 +71,23 @@ export const LoginForm = ({ onSuccess, defaultEmail }: LoginFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
+      <div className="space-y-2">
         <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
+          className="p-3"
           required
         />
       </div>
-      <div>
+      <div className="space-y-2">
         <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Enter your password"
+          className="p-3"
           required
         />
       </div>
