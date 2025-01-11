@@ -23,19 +23,22 @@ export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardPro
   
   useEffect(() => {
     const fetchCompanyInfo = async () => {
-      if (!order.items[0]?.companyId) return;
+      // Get the first item's companyId
+      const firstItem = order.items[0];
+      if (!firstItem?.companyId) return;
       
       try {
-        const companyDoc = await getDoc(doc(db, "users", order.items[0].companyId));
+        const companyDoc = await getDoc(doc(db, "users", firstItem.companyId));
         if (companyDoc.exists()) {
           const data = companyDoc.data();
-          setCompanyInfo({
-            companyName: data.companyName,
-            address: data.address,
-            phoneNumber: data.phoneNumber,
-            email: data.email,
-            companyLicense: data.companyLicense
-          });
+          const companyInfo = {
+            companyName: data.companyName || "",
+            address: data.address || "",
+            phoneNumber: data.phoneNumber || "",
+            email: data.email || "",
+            companyLicense: data.companyLicense || ""
+          };
+          setCompanyInfo(companyInfo);
         }
       } catch (error) {
         console.error("Error fetching company info:", error);
