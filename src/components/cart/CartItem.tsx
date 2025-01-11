@@ -44,7 +44,7 @@ export const CartItem = ({
           >
             <MinusCircle className="h-4 w-4" />
           </Button>
-          <span className="w-8 text-center">{quantity}</span>
+          <span className="w-8 text-center">{quantity} box{quantity === 1 ? '' : 'es'}</span>
           <Button
             variant="ghost"
             size="icon"
