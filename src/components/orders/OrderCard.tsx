@@ -106,7 +106,7 @@ export const OrderCard = ({ order, isCompany, companyMedicineIds }: OrderCardPro
             <div key={index} className="flex justify-between items-center">
               <div>
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                <p className="text-sm text-gray-600">Quantity: {item.quantity} box{item.quantity === 1 ? '' : 'es'}</p>
               </div>
               <p className="font-medium">BDT {(item.price * item.quantity).toFixed(2)}</p>
             </div>
