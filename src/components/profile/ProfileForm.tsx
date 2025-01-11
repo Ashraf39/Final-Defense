@@ -3,14 +3,12 @@ import { doc, updateDoc } from "firebase/firestore";
 import { updateEmail, updatePassword } from "firebase/auth";
 import { db } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProfileImageSection } from "./ProfileImageSection";
 import { ContactSection } from "./ContactSection";
 import { SecuritySection } from "./SecuritySection";
+import { NameSection } from "./NameSection";
 
 interface ProfileFormProps {
   initialData: {
@@ -119,20 +117,10 @@ export const ProfileForm = ({ initialData }: ProfileFormProps) => {
         onChange={(value) => handleInputChange("profileImage", value)}
       />
 
-      <div className="space-y-2">
-        <label htmlFor="displayName" className="flex items-center gap-2">
-          <User className="h-4 w-4" />
-          Full Name
-        </label>
-        <input
-          id="displayName"
-          name="displayName"
-          className="w-full p-2 border rounded"
-          placeholder="Enter your name"
-          value={userData.displayName}
-          onChange={(e) => handleInputChange("displayName", e.target.value)}
-        />
-      </div>
+      <NameSection 
+        displayName={userData.displayName}
+        onChange={handleInputChange}
+      />
 
       <ContactSection
         email={userData.email}
