@@ -11,7 +11,7 @@ export const MedicineImage = ({ image, name }: MedicineImageProps) => {
       <img
         src={image || "/placeholder.svg"}
         alt={name}
-        className="w-full h-[84px] sm:h-[112px] object-contain rounded-t-xl p-2 sm:p-3 bg-gradient-to-b from-[#F2FCE2] to-white transition-transform duration-300 group-hover:scale-105"
+        className="w-full h-[97px] sm:h-[129px] object-contain rounded-t-xl p-2 sm:p-3 bg-gradient-to-b from-[#F2FCE2] to-white transition-transform duration-300 group-hover:scale-105"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.src = "/placeholder.svg";
